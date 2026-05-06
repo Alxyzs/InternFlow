@@ -1,1 +1,6 @@
-<Solution />
+<Solution>
+  <Project Path="InternFlow.BLL/InternFlow.BLL.csproj" Id="dcf839fd-7abb-413c-992f-91e02c3f3a92" />
+  <Project Path="InternFlow.DAL/InternFlow.DAL.csproj" Id="368c7084-049e-45f0-a44e-2bbf703d670c" />
+  <Project Path="InternFlow.EL/InternFlow.EL.csproj" Id="477239c9-b960-4407-a36e-a38c82cff324" />
+  <Project Path="InternFlow.MVC/InternFlow.MVC.csproj" Id="43b821c2-edfa-4911-b21d-723a5501c978" />
+</Solution>
