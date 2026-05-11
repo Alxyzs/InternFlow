@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DBContextModels\" />
     <Folder Include="QueryModels\" />
   </ItemGroup>
 
