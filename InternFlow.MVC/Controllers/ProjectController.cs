@@ -28,8 +28,16 @@ namespace InternFlow.MVC.Controllers
         [HttpPost]
         public IActionResult Create(Project project)
         {
-            _projectService.Add(project);
-            return RedirectToAction("Index");
+            try
+            {
+                _projectService.Add(project);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(project);
+            }
         }
 
         public IActionResult Edit(int id)
