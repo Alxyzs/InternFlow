@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\InternFlow.DAL\InternFlow.DAL.csproj" />
+    <ProjectReference Include="..\InternFlow.EL\InternFlow.EL.csproj" />
+  </ItemGroup>
+
 </Project>
