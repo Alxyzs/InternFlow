@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\InternFlow.BLL\InternFlow.BLL.csproj" />
     <ProjectReference Include="..\InternFlow.DAL\InternFlow.DAL.csproj" />
     <ProjectReference Include="..\InternFlow.EL\InternFlow.EL.csproj" />
   </ItemGroup>

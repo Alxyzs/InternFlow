@@ -8,12 +8,6 @@ namespace InternFlow.MVC.Controllers
     public class HomeController : Controller
     {
 
-        //private readonly DataContext _Db;
-        //public HomeController(DataContext db)
-        //{
-        //    _db = db;
-        //}   
-
         public IActionResult Index()
         {
             return View();
@@ -27,9 +21,6 @@ namespace InternFlow.MVC.Controllers
         public IActionResult Contact()
         {
             ErrorViewModel md = new();
-
-            //DataContext db = new DataContext(); örnek 
-            //md.RequestId = "2";
 
             var jsonVerisi = JsonConvert.SerializeObject(md);
 
