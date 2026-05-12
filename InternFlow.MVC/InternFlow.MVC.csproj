@@ -10,4 +10,9 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\InternFlow.DAL\InternFlow.DAL.csproj" />
+    <ProjectReference Include="..\InternFlow.EL\InternFlow.EL.csproj" />
+  </ItemGroup>
+
 </Project>

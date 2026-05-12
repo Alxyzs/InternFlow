@@ -1,7 +1,13 @@
+using InternFlow.DAL.Context;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Services
 builder.Services.AddControllersWithViews();
+
+//DbContext sınıfım için .
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? "" ));
 
 var app = builder.Build();
 
