@@ -1,30 +1,31 @@
+using InternFlow.BLL.Interfaces;
 using InternFlow.MVC.Models;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace InternFlow.MVC.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IUserService _userService;
+        private readonly IProjectService _projectService;
+        private readonly ITaskService _taskService;
+
+        public HomeController(IUserService userService, IProjectService projectService, ITaskService taskService)
+        {
+            _userService = userService;
+            _projectService = projectService;
+            _taskService = taskService;
+        }
 
         public IActionResult Index()
         {
+            ViewBag.TotalUsers = _userService.GetAll().Count;
+            ViewBag.TotalProjects = _projectService.GetAll().Count;
+            ViewBag.ActiveTasks = _taskService.GetAll().Count(t => t.Status != "Tamamlandı");
+            ViewBag.CompletedTasks = _taskService.GetAll().Count(t => t.Status == "Tamamlandı");
+
             return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ErrorViewModel md = new();
-
-            var jsonVerisi = JsonConvert.SerializeObject(md);
-
-            return Json(jsonVerisi);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
