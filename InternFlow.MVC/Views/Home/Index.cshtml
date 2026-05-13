@@ -1,8 +1,186 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+
+    body {
+        background-color: #f4f7fa;
+    }
+
+    .dashboard-card {
+        transition: all 0.3s ease;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-8px);
+        }
+
+    .dashboard-icon {
+        font-size: 45px;
+    }
+
+</style>
+
+<div class="container mt-5">
+
+    <!-- HEADER -->
+    <div class="text-center mb-5">
+
+        <h1 class="display-3 fw-bold text-primary"> InternFlow </h1>
+
+        <p class="lead text-secondary"> Task, project and team management system </p>
+
+    </div>
+
+    <!-- STATS -->
+    <div class="row mb-5">
+
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white shadow border-0 rounded-4">
+
+                <div class="card-body text-center">
+
+                    <h5>Total Users</h5>
+
+                    <h2 class="fw-bold">12</h2>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white shadow border-0 rounded-4">
+
+                <div class="card-body text-center">
+
+                    <h5>Total Projects</h5>
+
+                    <h2 class="fw-bold">5</h2>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-dark shadow border-0 rounded-4">
+
+                <div class="card-body text-center">
+
+                    <h5>Active Tasks</h5>
+
+                    <h2 class="fw-bold">21</h2>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card bg-danger text-white shadow border-0 rounded-4">
+
+                <div class="card-body text-center">
+
+                    <h5>Completed Tasks</h5>
+
+                    <h2 class="fw-bold">14</h2>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MAIN MODULES -->
+    <div class="row g-4">
+
+        <!-- USERS -->
+        <div class="col-md-3">
+
+            <div class="card dashboard-card shadow-lg border-0 rounded-4 h-100">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="dashboard-icon mb-3">👤</div>
+
+                    <h3 class="fw-bold">Users</h3>
+
+                    <p class="text-muted">Sistemdeki kullanıcıları ve stajyerleri yönetin.</p>
+
+                    <button onclick="location.href='@Url.Action("Index", "Users")'"class="btn btn-primary w-100 py-2 rounded-pill">Users Panel</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- PROJECTS -->
+        <div class="col-md-3">
+
+            <div class="card dashboard-card shadow-lg border-0 rounded-4 h-100">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="dashboard-icon mb-3">📁</div>
+
+                    <h3 class="fw-bold">Projects</h3>
+
+                    <p class="text-muted">Projeleri oluşturun ve proje süreçlerini takip edin.</p>
+
+                    <button onclick="location.href='@Url.Action("Index", "Project")'" class="btn btn-success w-100 py-2 rounded-pill">Project Panel</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- TASKS -->
+        <div class="col-md-3">
+
+            <div class="card dashboard-card shadow-lg border-0 rounded-4 h-100">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="dashboard-icon mb-3"> ✅ </div>
+
+                    <h3 class="fw-bold"> Tasks </h3>
+
+                    <p class="text-muted"> Görev durumlarını, öncelikleri ve atamaları yönetin. </p>
+
+                    <button onclick="location.href='@Url.Action("Index", "Task")'" class="btn btn-warning text-white w-100 py-2 rounded-pill"> Task Panel </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- MEMBERS -->
+        <div class="col-md-3">
+
+            <div class="card dashboard-card shadow-lg border-0 rounded-4 h-100">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="dashboard-icon mb-3"> 👥 </div>
+
+                    <h3 class="fw-bold">nMembersn</h3>
+
+                    <p class="text-muted">Kullanıcı ve proje ilişkilerini yönetin.</p>
+
+                    <button onclick="location.href='@Url.Action("Index", "ProjectMember")'"class="btn btn-dark w-100 py-2 rounded-pill"> Member Panel </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>

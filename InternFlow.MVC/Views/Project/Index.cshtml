@@ -3,3 +3,14 @@
 *@
 @{
 }
+@model List<InternFlow.EL.DBContextModels.Project>
+
+<h1>Project Listesi</h1>
+
+@foreach (var item in Model)
+{
+    <div>
+        <h3>Adı : @item.Name </h3>
+        <h3>Üyeleri : @item.ProjectMembers </h3>
+    </div>
+}
