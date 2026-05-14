@@ -1,16 +1,108 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model List<InternFlow.EL.DBContextModels.Project>
+
 @{
+    ViewData["Title"] = "Projeler";
+    var filter = ViewBag.CurrentFilter as string;
 }
-@model List<InternFlow.EL.DBContextModels.Project>
 
-<h1>Project Listesi</h1>
+<link rel="stylesheet" href="~/css/project.css" />
 
-@foreach (var item in Model)
-{
-    <div>
-        <h3>Adı : @item.Name </h3>
-        <h3>Üyeleri : @item.ProjectMembers </h3>
+<div class="container mt-5">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+            <h1 class="page-title">📁 Projeler</h1>
+            <p class="page-subtitle">Projeleri filtrele ve yönet</p>
+        </div>
+
+        <button class="btn new-project-btn"
+                data-bs-toggle="modal"
+                data-bs-target="#createModal">
+            + Yeni Proje
+        </button>
+
     </div>
-}
+
+    <!-- FILTER -->
+    <div class="mb-4">
+
+        <a asp-action="Index"
+           class="btn filter-btn @(string.IsNullOrEmpty(filter) ? "active" : "")">
+            Hepsi
+        </a>
+
+        <a asp-action="Index" asp-route-status="Active"
+           class="btn filter-btn @(filter == "Active" ? "active" : "")">
+            Aktif
+        </a>
+
+        <a asp-action="Index" asp-route-status="Passive"
+           class="btn filter-btn @(filter == "Passive" ? "active" : "")">
+            Pasif
+        </a>
+
+        <a asp-action="Index" asp-route-status="Pending"
+           class="btn filter-btn @(filter == "Pending" ? "active" : "")">
+            Beklemede
+        </a>
+
+    </div>
+
+    <!-- LIST -->
+    <div class="row g-4">
+
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4">
+
+                <div class="card project-card h-100">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between">
+
+                            <h4 class="project-title">@item.Name</h4>
+
+                            <span class="status @item.Status?.ToLower()">
+                                @item.Status
+                            </span>
+
+                        </div>
+
+                        <hr />
+
+                        <p class="project-desc">
+                            @(string.IsNullOrEmpty(item.Description)
+                                                    ? "Açıklama bulunmuyor."
+                                                    : item.Description)
+                    </p>
+
+                    </div>
+
+                    <div class="card-footer project-footer">
+
+                        <!-- EDIT BUTTON -->
+                        <button type="button"
+                                class="btn btn-edit"
+                                onclick="openEditModal(@item.Id, '@item.Name', '@item.Description', '@item.Status')">
+                            Düzenle
+                        </button>
+
+                        <!-- DELETE -->
+                        <a asp-action="Delete"
+                           asp-route-id="@item.Id"
+                           class="btn btn-delete">
+                            Sil
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+                }
+
+    </div>
+</div>

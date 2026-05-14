@@ -14,9 +14,19 @@ namespace InternFlow.MVC.Controllers
             _projectService = projectService;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string status)
         {
             var projects = _projectService.GetAll();
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                projects = projects
+                    .Where(p => p.Status == status)
+                    .ToList();
+            }
+
+            ViewBag.CurrentFilter = status;
+
             return View(projects);
         }
 
