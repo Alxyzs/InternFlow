@@ -3,3 +3,76 @@
 *@
 @{
 }
+@model InternFlow.EL.DBContextModels.User
+
+@{
+    ViewData["Title"] = "Kullanıcı Düzenle";
+}
+
+<link rel="stylesheet" href="~/css/user.css" />
+
+<div class="container mt-5">
+
+    <div class="user-card mx-auto">
+
+        <div class="text-center mb-4">
+
+            <h1 class="user-title">
+                ✏️ Kullanıcı Düzenle
+            </h1>
+
+        </div>
+
+        <form asp-action="Edit" method="post">
+
+            <input type="hidden" asp-for="Id" />
+
+            <!-- FULLNAME -->
+            <div class="mb-4">
+
+                <label class="form-label">
+                    Ad Soyad
+                </label>
+
+                <input asp-for="FullName"
+                       class="form-control custom-input"
+                       required />
+
+            </div>
+
+            <!-- EMAIL -->
+            <div class="mb-4">
+
+                <label class="form-label">
+                    Email
+                </label>
+
+                <input asp-for="Email"
+                       class="form-control custom-input"
+                       required />
+
+            </div>
+
+            <div class="d-flex gap-3 mt-4">
+
+                <a asp-action="Index"
+                   class="btn back-btn w-50">
+
+                    Geri Dön
+
+                </a>
+
+                <button type="submit"
+                        class="btn save-btn w-50">
+
+                    Güncelle
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
