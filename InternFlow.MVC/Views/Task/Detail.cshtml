@@ -31,16 +31,16 @@
 
         <!-- RELATIONS -->
         <div class="mb-2">
-            📁 <b>Proje:</b> @(Model.Project?.Name ?? "Atanmamış")
+            📁 <b>Project:</b> @(Model.Project?.Name ?? "Atanmamış")
         </div>
 
         <div class="mb-2">
-            👤 <b>Kullanıcı:</b> @(Model.AssignedUser?.FullName ?? "Atanmamış")
+            👤 <b>User:</b> @(Model.AssignedUser?.FullName ?? "Atanmamış")
         </div>
 
         <!-- DUE DATE -->
         <div class="mb-2">
-            📅 <b>Son Tarih:</b>
+            📅 <b>Due Date:</b>
             @(Model.DueDate.HasValue
                         ? Model.DueDate.Value.ToString("dd.MM.yyyy")
                         : "Belirlenmemiş")
@@ -48,7 +48,7 @@
 
         <!-- CREATED AT -->
         <div class="mb-2 text-muted">
-            🕒 Oluşturulma: @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+            🕒 Creation Date: @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")
         </div>
 
     </div>
@@ -56,17 +56,17 @@
     <!-- COMMENT UI (frontend only) -->
     <div class="card p-4 mt-3">
 
-        <h5>💬 Yorumlar</h5>
+        <h5>💬 Comments </h5>
 
         <div class="border-bottom py-2">
             Demo comment
         </div>
 
         <textarea class="form-control mt-3"
-                  placeholder="Yorum yaz..."></textarea>
+                  placeholder="Add a comment..."></textarea>
 
         <button class="btn btn-primary mt-2">
-            Gönder
+            Send
         </button>
 
     </div>

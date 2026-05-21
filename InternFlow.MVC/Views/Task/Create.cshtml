@@ -13,19 +13,19 @@
 
     <div class="card p-4 mx-auto" style="max-width:650px;">
 
-        <h3>➕ Görev Oluştur</h3>
+        <h3>➕ Create Task </h3>
 
         <form asp-action="Create" method="post">
 
             <!-- TITLE -->
             <div class="mb-3">
-                <label>Başlık</label>
+                <label>Title</label>
                 <input asp-for="Title" class="form-control" />
             </div>
 
             <!-- DESCRIPTION -->
             <div class="mb-3">
-                <label>Açıklama</label>
+                <label>.Description</label>
                 <textarea asp-for="Description" class="form-control"></textarea>
             </div>
 
@@ -33,9 +33,9 @@
             <div class="mb-3">
                 <label>Status</label>
                 <select asp-for="Status" class="form-select">
-                    <option>Yeni</option>
                     <option>Active</option>
-                    <option>Done</option>
+                    <option>Passive</option>
+                    <option>Pending</option>
                 </select>
             </div>
 
@@ -43,15 +43,15 @@
             <div class="mb-3">
                 <label>Priority</label>
                 <select asp-for="Priority" class="form-select">
-                    <option>Normal</option>
                     <option>Low</option>
+                    <option>Normal</option>
                     <option>High</option>
                 </select>
             </div>
 
             <!-- PROJECT DROPDOWN -->
             <div class="mb-3">
-                <label>Proje</label>
+                <label>Project</label>
 
                 <input type="text"
                        id="projectSearch"
@@ -62,7 +62,7 @@
                         id="projectSelect"
                         class="form-select">
 
-                    <option value="">-- Seç --</option>
+                    <option value="">-- Select --</option>
 
                     @foreach (var p in projects)
                     {
@@ -74,18 +74,18 @@
 
             <!-- USER DROPDOWN -->
             <div class="mb-3">
-                <label>Kullanıcı</label>
+                <label>User</label>
 
                 <input type="text"
                        id="userSearch"
                        class="form-control mb-1"
-                       placeholder="Kullanıcı ara..." />
+                       placeholder="Search User..." />
 
                 <select asp-for="AssignedUserId"
                         id="userSelect"
                         class="form-select">
 
-                    <option value="">-- Seç --</option>
+                    <option value="">-- Select --</option>
 
                     @foreach (var u in users)
                     {
@@ -98,7 +98,7 @@
             <div class="mb-3">
 
                 <label class="form-label">
-                    Son Tarih
+                    Due Date
                 </label>
 
                 <input asp-for="DueDate"
@@ -108,7 +108,7 @@
             </div>
 
             <button class="btn btn-success w-100">
-                Kaydet
+                Save
             </button>
 
         </form>
