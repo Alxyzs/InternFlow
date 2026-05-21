@@ -1,5 +1,137 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model InternFlow.EL.DBContextModels.TaskItem
+@using InternFlow.BLL.Interfaces
+
+@inject IUserService userService
+
 @{
+    var users = userService.GetAll();
 }
+
+<div class="container mt-5">
+
+    <div class="card p-4 mx-auto" style="max-width:650px;">
+
+        <h3>✏️ Görev Düzenle</h3>
+
+        <form asp-action="Edit" method="post">
+
+            <!-- Gorev id -->
+            <input type="hidden" asp-for="Id" />
+
+            <!-- Proje Id -->
+            <input type="hidden" asp-for="ProjectId" />
+
+            <!-- Baslik -->
+            <div class="mb-3">
+                <label>Başlık</label>
+                <input asp-for="Title" class="form-control" />
+            </div>
+
+            <!-- Açıklama -->
+            <div class="mb-3">
+                <label>Açıklama</label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+            </div>
+
+            <!-- Durum -->
+            <div class="mb-3">
+                <label>Status</label>
+
+                <select asp-for="Status" class="form-select">
+                    <option value="Yeni">Yeni</option>
+                    <option value="Active">Active</option>
+                    <option value="Done">Done</option>
+                </select>
+            </div>
+
+            <!-- Oncelik -->
+            <div class="mb-3">
+                <label>Priority</label>
+
+                <select asp-for="Priority" class="form-select">
+                    <option value="Normal">Normal</option>
+                    <option value="Low">Low</option>
+                    <option value="High">High</option>
+                </select>
+            </div>
+
+            <!-- Kullanici Arama -->
+            <div class="mb-3">
+
+                <label>Kullanıcı</label>
+
+                <input type="text"
+                       id="userSearch"
+                       class="form-control mb-1"
+                       placeholder="Kullanıcı ara..." />
+
+                <select asp-for="AssignedUserId"
+                        id="userSelect"
+                        class="form-select">
+
+                    <option value="">-- Seç --</option>
+
+                    @foreach (var u in users)
+                    {
+                        <option value="@u.Id"
+                                selected="@(u.Id == Model.AssignedUserId)">
+
+                            @u.FullName
+
+                        </option>
+                    }
+
+                </select>
+
+            </div>
+
+            <!-- Tarih -->
+            <div class="mb-3">
+
+                <label>Son Tarih</label>
+
+                <input asp-for="DueDate"
+                       type="date"
+                       class="form-control" />
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-success w-100">
+
+                Güncelle
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+    function filterSelect(inputId, selectId) {
+
+        const input = document.getElementById(inputId);
+        const select = document.getElementById(selectId);
+
+        input.addEventListener("input", function () {
+
+            const value = this.value.toLowerCase();
+
+            for (let i = 0; i < select.options.length; i++) {
+
+                const text = select.options[i].text.toLowerCase();
+
+                select.options[i].hidden =
+                    !text.includes(value);
+
+            }
+
+        });
+    }
+
+    filterSelect("userSearch", "userSelect");
+
+</script>

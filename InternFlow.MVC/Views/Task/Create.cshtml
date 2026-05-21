@@ -1,5 +1,144 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model InternFlow.EL.DBContextModels.TaskItem
+@using InternFlow.BLL.Interfaces
+
+@inject IUserService userService
+@inject IProjectService projectService
+
 @{
+    var users = userService.GetAll();
+    var projects = projectService.GetAll();
 }
+
+<div class="container mt-5">
+
+    <div class="card p-4 mx-auto" style="max-width:650px;">
+
+        <h3>➕ Görev Oluştur</h3>
+
+        <form asp-action="Create" method="post">
+
+            <!-- TITLE -->
+            <div class="mb-3">
+                <label>Başlık</label>
+                <input asp-for="Title" class="form-control" />
+            </div>
+
+            <!-- DESCRIPTION -->
+            <div class="mb-3">
+                <label>Açıklama</label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+            </div>
+
+            <!-- STATUS -->
+            <div class="mb-3">
+                <label>Status</label>
+                <select asp-for="Status" class="form-select">
+                    <option>Yeni</option>
+                    <option>Active</option>
+                    <option>Done</option>
+                </select>
+            </div>
+
+            <!-- PRIORITY -->
+            <div class="mb-3">
+                <label>Priority</label>
+                <select asp-for="Priority" class="form-select">
+                    <option>Normal</option>
+                    <option>Low</option>
+                    <option>High</option>
+                </select>
+            </div>
+
+            <!-- PROJECT DROPDOWN -->
+            <div class="mb-3">
+                <label>Proje</label>
+
+                <input type="text"
+                       id="projectSearch"
+                       class="form-control mb-1"
+                       placeholder="Proje ara..." />
+
+                <select asp-for="ProjectId"
+                        id="projectSelect"
+                        class="form-select">
+
+                    <option value="">-- Seç --</option>
+
+                    @foreach (var p in projects)
+                    {
+                        <option value="@p.Id">@p.Name</option>
+                    }
+
+                </select>
+            </div>
+
+            <!-- USER DROPDOWN -->
+            <div class="mb-3">
+                <label>Kullanıcı</label>
+
+                <input type="text"
+                       id="userSearch"
+                       class="form-control mb-1"
+                       placeholder="Kullanıcı ara..." />
+
+                <select asp-for="AssignedUserId"
+                        id="userSelect"
+                        class="form-select">
+
+                    <option value="">-- Seç --</option>
+
+                    @foreach (var u in users)
+                    {
+                        <option value="@u.Id">@u.FullName</option>
+                    }
+
+                </select>
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Son Tarih
+                </label>
+
+                <input asp-for="DueDate"
+                       type="date"
+                       class="form-control" />
+
+            </div>
+
+            <button class="btn btn-success w-100">
+                Kaydet
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+    function filterSelect(inputId, selectId) {
+
+        const input = document.getElementById(inputId);
+        const select = document.getElementById(selectId);
+
+        input.addEventListener("input", function () {
+
+            const value = this.value.toLowerCase();
+
+            for (let i = 0; i < select.options.length; i++) {
+
+                const text = select.options[i].text.toLowerCase();
+
+                select.options[i].hidden = !text.includes(value);
+            }
+
+        });
+    }
+
+    filterSelect("projectSearch", "projectSelect");
+    filterSelect("userSearch", "userSelect");
+
+</script>

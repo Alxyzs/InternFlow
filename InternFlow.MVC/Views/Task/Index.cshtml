@@ -1,5 +1,103 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model List<InternFlow.EL.DBContextModels.TaskItem>
+
+@using InternFlow.BLL.Interfaces
+@inject IUserService userService
+@inject IProjectService projectService
+
 @{
+    var users = userService.GetAll();
+    var projects = projectService.GetAll();
 }
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>📌 Görevler</h2>
+
+        <a asp-action="Create" class="btn btn-success">
+            + Yeni Görev
+        </a>
+
+    </div>
+
+    <div class="row g-4">
+
+        @foreach (var item in Model)
+        {
+            var project = projects.FirstOrDefault(x => x.Id == item.ProjectId);
+            var user = users.FirstOrDefault(x => x.Id == item.AssignedUserId);
+
+            <div class="col-md-4">
+
+                <div class="card shadow-sm p-3 h-100">
+
+                    <!-- TITLE -->
+                    <h5 class="mb-2">
+                        @item.Title
+                    </h5>
+
+                    <!-- DESCRIPTION -->
+                    <p class="text-muted">
+                        @(string.IsNullOrEmpty(item.Description)
+                                            ? "Açıklama yok"
+                                            : item.Description)
+                </p>
+
+                    <hr />
+
+                    <!-- PROJECT -->
+                    <div class="mb-1">
+                        📁 <b>Proje:</b>
+                        @(project?.Name ?? "Atanmamış")
+                    </div>
+
+                    <!-- USER -->
+                    <div class="mb-1">
+                        👤 <b>Kullanıcı:</b>
+                        @(user?.FullName ?? "Atanmamış")
+                    </div>
+
+                    <!-- STATUS -->
+                    <div class="mt-2">
+                        <span class="badge bg-secondary">
+                            @item.Status
+                        </span>
+
+                        <span class="badge bg-info">
+                            @item.Priority
+                        </span>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="mt-3 d-flex gap-2">
+
+                        <a asp-action="Edit"
+                           asp-route-id="@item.Id"
+                           class="btn btn-primary w-50">
+                            Düzenle
+                        </a>
+
+                        <a asp-action="Detail"
+                           asp-route-id="@item.Id"
+                           class="btn btn-dark w-50">
+                            Detay
+                        </a>
+
+                    </div>
+
+                    <div class="mt-2">
+                        📅 <b>Son Tarih:</b>
+                        @(item.DueDate.HasValue
+                                            ? item.DueDate.Value.ToString("dd.MM.yyyy")
+                                            : "Belirlenmemiş")
+                </div>
+
+                </div>
+
+            </div>
+                }
+
+    </div>
+
+</div>

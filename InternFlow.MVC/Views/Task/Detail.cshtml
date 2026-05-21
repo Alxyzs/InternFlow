@@ -1,5 +1,74 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model InternFlow.EL.DBContextModels.TaskItem
+
+<div class="container mt-5">
+
+    <div class="card p-4">
+
+        <!-- TITLE -->
+        <h3>@Model.Title</h3>
+
+        <!-- DESCRIPTION -->
+        <p class="text-muted">
+            @(string.IsNullOrEmpty(Model.Description)
+                        ? "Açıklama yok"
+                        : Model.Description)
+        </p>
+
+        <!-- BADGES -->
+        <div class="mb-3">
+
+            <span class="badge bg-secondary">
+                @Model.Status
+            </span>
+
+            <span class="badge bg-info">
+                @Model.Priority
+            </span>
+
+        </div>
+
+        <hr />
+
+        <!-- RELATIONS -->
+        <div class="mb-2">
+            📁 <b>Proje:</b> @(Model.Project?.Name ?? "Atanmamış")
+        </div>
+
+        <div class="mb-2">
+            👤 <b>Kullanıcı:</b> @(Model.AssignedUser?.FullName ?? "Atanmamış")
+        </div>
+
+        <!-- DUE DATE -->
+        <div class="mb-2">
+            📅 <b>Son Tarih:</b>
+            @(Model.DueDate.HasValue
+                        ? Model.DueDate.Value.ToString("dd.MM.yyyy")
+                        : "Belirlenmemiş")
+        </div>
+
+        <!-- CREATED AT -->
+        <div class="mb-2 text-muted">
+            🕒 Oluşturulma: @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+        </div>
+
+    </div>
+
+    <!-- COMMENT UI (frontend only) -->
+    <div class="card p-4 mt-3">
+
+        <h5>💬 Yorumlar</h5>
+
+        <div class="border-bottom py-2">
+            Demo comment
+        </div>
+
+        <textarea class="form-control mt-3"
+                  placeholder="Yorum yaz..."></textarea>
+
+        <button class="btn btn-primary mt-2">
+            Gönder
+        </button>
+
+    </div>
+
+</div>
