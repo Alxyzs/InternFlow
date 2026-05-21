@@ -48,6 +48,8 @@ namespace InternFlow.MVC.Controllers
         [HttpPost]
         public IActionResult Edit(User user)
         {
+            var existing = _userService.GetById(user.Id);
+            user.CreatedAt = existing.CreatedAt; // eski tarihi korur guncellerken onun ıcın eklendi 
             _userService.Update(user);
             return RedirectToAction("Index");
         }
