@@ -1,4 +1,5 @@
 ﻿using InternFlow.BLL.Interfaces;
+using InternFlow.BLL.Services;
 using InternFlow.EL.DBContextModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +9,13 @@ namespace InternFlow.MVC.Controllers
     {
         private readonly ITaskService _taskService;
         private readonly ICommentService _commentService;
+        private readonly IProjectMemberService _projectMemberService;
 
-        public TaskController(ITaskService taskService, ICommentService commentService)
+        public TaskController(ITaskService taskService, ICommentService commentService, IProjectMemberService projectMemberService)
         {
             _taskService = taskService;
             _commentService = commentService;
+            _projectMemberService = projectMemberService;
         }
 
         public IActionResult Index()
@@ -32,6 +35,23 @@ namespace InternFlow.MVC.Controllers
             try
             {
                 _taskService.Add(task);
+
+                if (task.AssignedUserId.HasValue)
+                {
+                    var isMember = _projectMemberService.GetAll()
+                        .Any(pm => pm.ProjectId == task.ProjectId
+                                && pm.UserId == task.AssignedUserId.Value);
+
+                    if (!isMember)
+                    {
+                        _projectMemberService.Add(new ProjectMember
+                        {
+                            ProjectId = task.ProjectId,
+                            UserId = task.AssignedUserId.Value
+                        });
+                    }
+                }
+
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
