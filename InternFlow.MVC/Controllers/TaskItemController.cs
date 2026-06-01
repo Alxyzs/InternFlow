@@ -120,5 +120,18 @@ namespace InternFlow.MVC.Controllers
 
             return RedirectToAction("Index");
         }
+
+        //Kanban Board için 
+        public IActionResult Kanban()
+        {
+            var tasks = _taskService.GetAll();
+
+            ViewBag.New = tasks.Where(t => t.Status == "Active").ToList();
+            ViewBag.InProgress = tasks.Where(t => t.Status == "Passive").ToList();
+            ViewBag.Testing = tasks.Where(t => t.Status == "Pending").ToList();
+            ViewBag.Completed = tasks.Where(t => t.Status == "Completed").ToList();
+
+            return View();
+        }
     }
 }

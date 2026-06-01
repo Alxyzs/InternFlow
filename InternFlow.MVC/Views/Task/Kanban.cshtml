@@ -1,0 +1,168 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@{
+    ViewData["Title"] = "Kanban Board";
+}
+
+<style>
+    .kanban-column {
+        min-height: 400px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+    }
+
+    .task-card {
+        cursor: grab;
+        background: white;
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+        .task-card:active {
+            cursor: grabbing;
+        }
+
+    .kanban-column.drag-over {
+        background: #e2e8f0;
+        border: 2px dashed #94a3b8;
+    }
+</style>
+
+<div class="container mt-5">
+
+    <h2 class="mb-4">📋 Kanban Board</h2>
+
+    <div class="row g-3">
+
+        <!-- ACTIVE -->
+        <div class="col-md-3">
+            <div class="card p-3">
+                <h5 class="text-center mb-3">🆕 Active</h5>
+                <div class="kanban-column" data-status="Active">
+                    @foreach (var task in ViewBag.New)
+                    {
+                        <div class="task-card"
+                             draggable="true"
+                             data-id="@task.Id">
+                            <b>@task.Title</b>
+                            <p class="text-muted mb-1 small">@task.Description</p>
+                            <span class="badge bg-info">@task.Priority</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- PASSIVE -->
+        <div class="col-md-3">
+            <div class="card p-3">
+                <h5 class="text-center mb-3">⚙️ Passive</h5>
+                <div class="kanban-column" data-status="Passive">
+                    @foreach (var task in ViewBag.InProgress)
+                    {
+                        <div class="task-card"
+                             draggable="true"
+                             data-id="@task.Id">
+                            <b>@task.Title</b>
+                            <p class="text-muted mb-1 small">@task.Description</p>
+                            <span class="badge bg-warning">@task.Priority</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- PENDING -->
+        <div class="col-md-3">
+            <div class="card p-3">
+                <h5 class="text-center mb-3">🧪 Pending</h5>
+                <div class="kanban-column" data-status="Pending">
+                    @foreach (var task in ViewBag.Testing)
+                    {
+                        <div class="task-card"
+                             draggable="true"
+                             data-id="@task.Id">
+                            <b>@task.Title</b>
+                            <p class="text-muted mb-1 small">@task.Description</p>
+                            <span class="badge bg-primary">@task.Priority</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPLETED -->
+        <div class="col-md-3">
+            <div class="card p-3">
+                <h5 class="text-center mb-3">✅ Completed</h5>
+                <div class="kanban-column" data-status="Completed">
+                    @foreach (var task in ViewBag.Completed)
+                    {
+                        <div class="task-card"
+                             draggable="true"
+                             data-id="@task.Id">
+                            <b>@task.Title</b>
+                            <p class="text-muted mb-1 small">@task.Description</p>
+                            <span class="badge bg-success">@task.Priority</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    let draggedCard = null;
+
+    document.querySelectorAll(".task-card").forEach(card => {
+        card.addEventListener("dragstart", function () {
+            draggedCard = this;
+            setTimeout(() => this.style.opacity = "0.5", 0);
+        });
+
+        card.addEventListener("dragend", function () {
+            this.style.opacity = "1";
+            draggedCard = null;
+        });
+    });
+
+    document.querySelectorAll(".kanban-column").forEach(column => {
+        column.addEventListener("dragover", function (e) {
+            e.preventDefault();
+            this.classList.add("drag-over");
+        });
+
+        column.addEventListener("dragleave", function () {
+            this.classList.remove("drag-over");
+        });
+
+        column.addEventListener("drop", function () {
+            this.classList.remove("drag-over");
+
+            if (draggedCard) {
+                this.appendChild(draggedCard);
+
+                const taskId = draggedCard.dataset.id;
+                const newStatus = this.dataset.status;
+
+                // Veritabanını güncelle
+                fetch(`/Task/UpdateStatus/${taskId}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `status=${newStatus}`
+                });
+            }
+        });
+    });
+</script>
