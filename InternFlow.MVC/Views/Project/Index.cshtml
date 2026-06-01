@@ -9,7 +9,7 @@
 
 <div class="container mt-5">
 
-    <!-- HEADER -->
+    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
@@ -19,7 +19,7 @@
             </p>
         </div>
 
-        <!-- CREATE BUTTON -->
+        <!-- Oluşturma Butonu -->
         <button type="button"
                 class="btn new-project-btn"
                 data-bs-toggle="modal"
@@ -31,7 +31,7 @@
 
     </div>
 
-    <!-- SEARCH BOX -->
+    <!-- Arama Kutusu -->
     <div class="mb-4">
 
         <input type="text"
@@ -41,7 +41,7 @@
 
     </div>
 
-    <!-- FILTERS -->
+    <!-- Filtreleme -->
     <div class="mb-4 d-flex gap-2 flex-wrap">
 
         <a asp-action="Index"
@@ -77,7 +77,7 @@
 
     </div>
 
-    <!-- PROJECT LIST -->
+    <!-- Proje Listesi -->
     <div class="row g-4">
 
         @foreach (var item in Model)
@@ -119,7 +119,7 @@
 
                     <div class="card-footer project-footer">
 
-                        <!-- EDIT -->
+                        <!-- Düzenle -->
                         <button type="button"
                                 class="btn btn-edit"
                                 onclick="openEditModal(
@@ -133,7 +133,7 @@
 
                         </button>
 
-                        <!-- DELETE -->
+                        <!-- Sil -->
                         <a asp-action="Delete"
                            asp-route-id="@item.Id"
                            class="btn btn-delete"
@@ -154,9 +154,7 @@
 
 </div>
 
-<!-- ================================= -->
-<!-- CREATE MODAL -->
-<!-- ================================= -->
+<!-- Modal Oluştur -->
 
 <div class="modal fade"
      id="createModal"
@@ -184,7 +182,7 @@
 
                 <div class="modal-body">
 
-                    <!-- NAME -->
+                    <!-- Ad -->
                     <div class="mb-3">
 
                         <label class="form-label">
@@ -198,7 +196,7 @@
 
                     </div>
 
-                    <!-- DESCRIPTION -->
+                    <!-- Açıklama -->
                     <div class="mb-3">
 
                         <label class="form-label">
@@ -211,7 +209,7 @@
 
                     </div>
 
-                    <!-- STATUS -->
+                    <!-- Durum -->
                     <div class="mb-3">
 
                         <label class="form-label">
@@ -266,9 +264,7 @@
 
 </div>
 
-<!-- ================================= -->
-<!-- EDIT MODAL -->
-<!-- ================================= -->
+<!-- Modal Düzenle -->
 
 <div class="modal fade"
      id="editModal"
@@ -296,12 +292,12 @@
 
                 <div class="modal-body">
 
-                    <!-- ID -->
+                    <!-- Id -->
                     <input type="hidden"
                            id="editId"
                            name="Id" />
 
-                    <!-- NAME -->
+                    <!-- Ad -->
                     <div class="mb-3">
 
                         <label class="form-label">
@@ -316,7 +312,7 @@
 
                     </div>
 
-                    <!-- DESCRIPTION -->
+                    <!-- Açıklama -->
                     <div class="mb-3">
 
                         <label class="form-label">
@@ -330,7 +326,7 @@
 
                     </div>
 
-                    <!-- STATUS -->
+                    <!-- Durum -->
                     <div class="mb-3">
 
                         <label class="form-label">
@@ -386,15 +382,9 @@
 
 </div>
 
-<!-- ================================= -->
-<!-- BOOTSTRAP JS -->
-<!-- ================================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- ================================= -->
-<!-- JS -->
-<!-- ================================= -->
 
 <script>
 

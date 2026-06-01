@@ -1,5 +1,200 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using InternFlow.EL.DBContextModels
+
 @{
+    ViewData["Title"] = "Dashboard";
+
+    var tasks = ViewBag.Tasks as List<TaskItem> ?? new();
+    var users = ViewBag.Users as List<User> ?? new();
+    var projects = ViewBag.Projects as List<Project> ?? new();
+
+    var totalTasks = tasks.Count;
+
+    var completedTasks =
+        tasks.Count(x => x.Status == "Done");
+
+    var activeTasks =
+        tasks.Count(x => x.Status == "Active");
+
+    var expiredTasks =
+        tasks.Count(x =>
+            x.DueDate.HasValue &&
+            x.DueDate.Value.Date < DateTime.Now.Date &&
+            x.Status != "Done");
+
+    var highPriorityTasks =
+        tasks.Where(x => x.Priority == "High")
+             .OrderBy(x => x.DueDate)
+             .Take(10)
+             .ToList();
+
+    var recentTasks =
+        tasks.OrderByDescending(x => x.CreatedAt)
+             .Take(10)
+             .ToList();
 }
+
+<div class="container mt-5">
+
+    <h1 class="mb-4">
+        📊 Dashboard
+    </h1>
+
+    <div class="row g-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-4 text-center">
+                <h2>@totalTasks</h2>
+                <p class="mb-0">Total Tasks</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-4 text-center">
+                <h2>@completedTasks</h2>
+                <p class="mb-0">Completed Tasks</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-4 text-center">
+                <h2>@activeTasks</h2>
+                <p class="mb-0">Active Tasks</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-4 text-center">
+                <h2>@expiredTasks</h2>
+                <p class="mb-0">Expired Tasks</p>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="card mt-5 shadow-sm">
+
+        <div class="card-header">
+            👥 User Task Distribution
+        </div>
+
+        <div class="card-body">
+
+            @foreach (var user in users)
+            {
+                var count =
+                tasks.Count(x =>
+                x.AssignedUserId == user.Id);
+
+                <div class="d-flex justify-content-between border-bottom py-2">
+
+                    <span>@user.FullName</span>
+
+                    <strong>@count Task(s)</strong>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+
+    <div class="card mt-4 shadow-sm">
+
+        <div class="card-header">
+            📁 Project Task Distribution
+        </div>
+
+        <div class="card-body">
+
+            @foreach (var project in projects)
+            {
+                var count =
+                tasks.Count(x =>
+                x.ProjectId == project.Id);
+
+                <div class="d-flex justify-content-between border-bottom py-2">
+
+                    <span>@project.Name</span>
+
+                    <strong>@count Task(s)</strong>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+
+    <div class="card mt-4 shadow-sm">
+
+        <div class="card-header">
+            🔥 High Priority Tasks
+        </div>
+
+        <div class="card-body">
+
+            @if (highPriorityTasks.Any())
+            {
+                @foreach (var task in highPriorityTasks)
+                {
+                    <div class="border-bottom py-2">
+
+                        <strong>
+                            @task.Title
+                        </strong>
+
+                        <div class="text-muted">
+
+                            Due:
+                            @(task.DueDate?.ToString("dd.MM.yyyy")
+                                                ?? "Uncertain")
+
+                </div>
+
+                    </div>
+                        }
+            }
+            else
+            {
+                <p>No high priority tasks found.</p>
+            }
+
+        </div>
+
+    </div>
+
+
+    <div class="card mt-4 shadow-sm mb-5">
+
+        <div class="card-header">
+            🕒 Recent Activities
+        </div>
+
+        <div class="card-body">
+
+            @foreach (var task in recentTasks)
+            {
+                <div class="border-bottom py-2">
+
+                    <strong>
+                        @task.Title
+                    </strong>
+
+                    <div class="text-muted">
+
+                        Created:
+                        @task.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>

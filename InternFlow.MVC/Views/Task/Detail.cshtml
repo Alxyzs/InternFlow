@@ -4,17 +4,17 @@
 
     <div class="card p-4">
 
-        <!-- TITLE -->
+        <!-- Başlık -->
         <h3>@Model.Title</h3>
 
-        <!-- DESCRIPTION -->
+        <!-- Açıklama -->
         <p class="text-muted">
             @(string.IsNullOrEmpty(Model.Description)
-                        ? "Açıklama yok"
+                        ? "Not Appointed"
                         : Model.Description)
         </p>
 
-        <!-- BADGES -->
+        <!-- Rozetler -->
         <div class="mb-3">
 
             <span class="badge bg-secondary">
@@ -29,31 +29,31 @@
 
         <hr />
 
-        <!-- RELATIONS -->
+        <!-- Iliskiler -->
         <div class="mb-2">
-            📁 <b>Project:</b> @(Model.Project?.Name ?? "Atanmamış")
+            📁 <b>Project:</b> @(Model.Project?.Name ?? "Not Appointed")
         </div>
 
         <div class="mb-2">
-            👤 <b>User:</b> @(Model.AssignedUser?.FullName ?? "Atanmamış")
+            👤 <b>User:</b> @(Model.AssignedUser?.FullName ?? "Not Appointed")
         </div>
 
-        <!-- DUE DATE -->
+        <!-- Bitiş Tarihi -->
         <div class="mb-2">
             📅 <b>Due Date:</b>
             @(Model.DueDate.HasValue
                         ? Model.DueDate.Value.ToString("dd.MM.yyyy")
-                        : "Belirlenmemiş")
+                        : "Uncertain")
         </div>
 
-        <!-- CREATED AT -->
+        <!-- Oluşturulma Tarihi -->
         <div class="mb-2 text-muted">
             🕒 Creation Date: @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")
         </div>
 
     </div>
 
-    <!-- COMMENT UI (frontend only) -->
+    <!-- Yorum -->
     <div class="card p-4 mt-3">
 
         <h5>💬 Comments </h5>

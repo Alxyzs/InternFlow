@@ -2,6 +2,7 @@ using InternFlow.BLL.Interfaces;
 using InternFlow.MVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Linq;
 
 namespace InternFlow.MVC.Controllers
 {
@@ -20,10 +21,17 @@ namespace InternFlow.MVC.Controllers
 
         public IActionResult Index()
         {
-            ViewBag.TotalUsers = _userService.GetAll().Count;
-            ViewBag.TotalProjects = _projectService.GetAll().Count;
-            ViewBag.ActiveTasks = _taskService.GetAll().Count(t => t.Status != "Tamamlandı");
-            ViewBag.CompletedTasks = _taskService.GetAll().Count(t => t.Status == "Tamamlandı");
+            var users = _userService.GetAll();
+            var projects = _projectService.GetAll();
+            var tasks = _taskService.GetAll();
+
+            ViewBag.TotalUsers = users.Count;
+            ViewBag.TotalProjects = projects.Count;
+
+            // 🔥 FIX: Dashboard ile aynı standart (Done / Active)
+            ViewBag.ActiveTasks = tasks.Count(t => t.Status == "Active");
+
+            ViewBag.CompletedTasks = tasks.Count(t => t.Status == "Done");
 
             return View();
         }
