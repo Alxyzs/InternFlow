@@ -4,6 +4,7 @@ using InternFlow.DAL.Context;
 using InternFlow.DAL.Interfaces;
 using InternFlow.DAL.Repositories;
 using InternFlow.EL.DBContextModels;
+using InternFlow.MVC.Hubs;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +32,9 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
     builder.Services.AddSwaggerGen();
 //
 
+// SignalR
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Error handling
@@ -53,6 +57,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+//SignalR hub'ını Ekler
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.UseAuthorization();
 

@@ -1,18 +1,22 @@
 ﻿using InternFlow.BLL.Interfaces;
 using InternFlow.EL.DBContextModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using InternFlow.MVC.Hubs;
 
 namespace InternFlow.MVC.Controllers
 {
     public class ProjectController : Controller
     {
-
         private readonly IProjectService _projectService;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public ProjectController(IProjectService projectService)
+        public ProjectController(IProjectService projectService, IHubContext<NotificationHub> hubContext)
         {
             _projectService = projectService;
+            _hubContext = hubContext;
         }
+
 
         public IActionResult Index(string status)
         {
@@ -35,12 +39,14 @@ namespace InternFlow.MVC.Controllers
             return View();
         }
 
+
         [HttpPost]
-        public IActionResult Create(Project project)
+        public async Task<IActionResult> Create(Project project)
         {
             try
             {
                 _projectService.Add(project);
+                await _hubContext.Clients.All.SendAsync("ReceiveProjectNotification", project.Name);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)

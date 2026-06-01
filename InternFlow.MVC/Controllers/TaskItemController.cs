@@ -2,6 +2,8 @@
 using InternFlow.BLL.Services;
 using InternFlow.EL.DBContextModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using InternFlow.MVC.Hubs;
 
 namespace InternFlow.MVC.Controllers
 {
@@ -11,13 +13,15 @@ namespace InternFlow.MVC.Controllers
         private readonly ICommentService _commentService;
         private readonly IProjectMemberService _projectMemberService;
         private readonly IActivityLogService _activityLogService;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public TaskController(ITaskService taskService, ICommentService commentService, IProjectMemberService projectMemberService, IActivityLogService activityLogService)
+        public TaskController(ITaskService taskService, ICommentService commentService, IProjectMemberService projectMemberService, IActivityLogService activityLogService, IHubContext<NotificationHub> hubContext)
         {
             _taskService = taskService;
             _commentService = commentService;
             _projectMemberService = projectMemberService;
             _activityLogService = activityLogService;
+            _hubContext = hubContext;
         }
 
         public IActionResult Index()
@@ -80,9 +84,22 @@ namespace InternFlow.MVC.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(TaskItem task)
+        public async Task<IActionResult> Edit(TaskItem task)
         {
-            _taskService.Update(task);
+            var existing = _taskService.GetById(task.Id);
+
+            existing.Title = task.Title;
+            existing.Description = task.Description;
+            existing.Status = task.Status;
+            existing.Priority = task.Priority;
+            existing.DueDate = task.DueDate;
+            existing.AssignedUserId = task.AssignedUserId;
+            existing.ProjectId = task.ProjectId;
+
+            _taskService.Update(existing);
+
+            await _hubContext.Clients.All.SendAsync("ReceiveStatusUpdate", task.Id, task.Status, task.Title);
+
             return RedirectToAction("Index");
         }
 
@@ -103,8 +120,9 @@ namespace InternFlow.MVC.Controllers
             return View(task);
         }
 
+
         [HttpPost]
-        public IActionResult UpdateStatus(int id, string status)
+        public async Task<IActionResult> UpdateStatus(int id, string status)
         {
             var task = _taskService.GetById(id);
             _taskService.UpdateStatus(id, status);
@@ -117,6 +135,9 @@ namespace InternFlow.MVC.Controllers
                 Detail = $"{task.Title} → {status}",
                 CreatedAt = DateTime.Now
             });
+
+            // SignalR ile herkese bildir
+            await _hubContext.Clients.All.SendAsync("ReceiveStatusUpdate", id, status, task.Title);
 
             return RedirectToAction("Index");
         }

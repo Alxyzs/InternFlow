@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="~/InternFlow.MVC.styles.css" asp-append-version="true" />
 </head>
 <body>
+    <!-- Bildirim Container -->
+    <div id="notificationContainer"
+         style="position:fixed; top:20px; right:20px; z-index:9999; width:350px;">
+    </div>
+
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -45,6 +50,43 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- SignalR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/notificationHub")
+        .build();
+
+        connection.on("ReceiveStatusUpdate", function (taskId, newStatus, taskTitle) {
+        showNotification(`📋 "${taskTitle}" status changed to ${newStatus}`);
+        });
+
+        connection.on("ReceiveComment", function (taskId, comment) {
+        showNotification(`💬 New comment: ${comment}`);
+        });
+
+        connection.on("ReceiveProjectNotification", function (projectName) {
+        showNotification(`📁 New project: "${projectName}"`);
+        });
+
+        connection.start().catch(err => console.error(err));
+
+        function showNotification(message) {
+        const container = document.getElementById("notificationContainer");
+        const notification = document.createElement("div");
+        notification.className = "alert alert-info alert-dismissible fade show";
+        notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        container.appendChild(notification);
+        setTimeout(() => notification.remove(), 5000);
+        }
+    </script>
+    <!-- SignalR -->
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
