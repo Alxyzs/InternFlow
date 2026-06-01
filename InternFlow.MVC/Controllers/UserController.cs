@@ -48,10 +48,29 @@ namespace InternFlow.MVC.Controllers
         [HttpPost]
         public IActionResult Edit(User user)
         {
-            var existing = _userService.GetById(user.Id);
-            user.CreatedAt = existing.CreatedAt; // eski tarihi korur guncellerken onun ıcın eklendi 
-            _userService.Update(user);
-            return RedirectToAction("Index");
+            try
+            {
+                if (user == null || user.Id == 0)
+                    return RedirectToAction("Index");
+
+                var existing = _userService.GetById(user.Id);
+
+                if (existing == null)
+                    return RedirectToAction("Index");
+
+                // 🔥 CRITICAL FIX: tracked entity yerine temiz update
+                existing.FullName = user.FullName;
+                existing.Email = user.Email;
+
+                _userService.Update(existing);
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(user);
+            }
         }
 
         public IActionResult Delete(int id)

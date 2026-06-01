@@ -61,3 +61,19 @@ a.btn
 {
     text-decoration: none !important
 }
+
+.back-btn 
+{
+    background-color: #dc2626 !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.back-btn:hover,
+.back-btn:focus,
+.back-btn:active 
+{
+    background-color: #991b1b !important;
+    color: #fff !important;
+    transform: translateY(-1px);
+}
