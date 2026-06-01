@@ -10,12 +10,14 @@ namespace InternFlow.MVC.Controllers
         private readonly ITaskService _taskService;
         private readonly ICommentService _commentService;
         private readonly IProjectMemberService _projectMemberService;
+        private readonly IActivityLogService _activityLogService;
 
-        public TaskController(ITaskService taskService, ICommentService commentService, IProjectMemberService projectMemberService)
+        public TaskController(ITaskService taskService, ICommentService commentService, IProjectMemberService projectMemberService, IActivityLogService activityLogService)
         {
             _taskService = taskService;
             _commentService = commentService;
             _projectMemberService = projectMemberService;
+            _activityLogService = activityLogService;
         }
 
         public IActionResult Index()
@@ -36,6 +38,16 @@ namespace InternFlow.MVC.Controllers
             {
                 _taskService.Add(task);
 
+                _activityLogService.Add(new ActivityLog
+                {
+                    TaskItemId = task.Id,
+                    UserId = task.AssignedUserId ?? 1,
+                    Action = "Task Created",
+                    Detail = $"{task.Title} created.",
+                    CreatedAt = DateTime.Now
+                });
+
+                // Kullanıcı projeye üye değilse ekle
                 if (task.AssignedUserId.HasValue)
                 {
                     var isMember = _projectMemberService.GetAll()
@@ -94,7 +106,18 @@ namespace InternFlow.MVC.Controllers
         [HttpPost]
         public IActionResult UpdateStatus(int id, string status)
         {
+            var task = _taskService.GetById(id);
             _taskService.UpdateStatus(id, status);
+
+            _activityLogService.Add(new ActivityLog
+            {
+                TaskItemId = id,
+                UserId = task.AssignedUserId ?? 1,
+                Action = "Status Changed",
+                Detail = $"{task.Title} → {status}",
+                CreatedAt = DateTime.Now
+            });
+
             return RedirectToAction("Index");
         }
     }
