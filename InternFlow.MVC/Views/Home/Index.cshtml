@@ -24,7 +24,7 @@
 
 <div class="container mt-5">
 
-    <!-- HEADER -->
+    <!-- Header -->
     <div class="text-center mb-5">
 
         <h1 class="display-3 fw-bold text-primary"> InternFlow </h1>
@@ -33,7 +33,7 @@
 
     </div>
 
-    <!-- STATS -->
+    <!-- Istatislikler -->
     <div class="row mb-5">
 
         <div class="col-md-3 mb-3">
@@ -42,7 +42,6 @@
                 <div class="card-body text-center">
 
                     <h5>Total Users</h5>
-
                     <h2 class="fw-bold">@ViewBag.TotalUsers</h2>
 
                 </div>
@@ -56,7 +55,6 @@
                 <div class="card-body text-center">
 
                     <h5>Total Projects</h5>
-
                     <h2 class="fw-bold">@ViewBag.TotalProjects</h2>
 
                 </div>
@@ -70,7 +68,6 @@
                 <div class="card-body text-center">
 
                     <h5>Active Tasks</h5>
-
                     <h2 class="fw-bold">@ViewBag.ActiveTasks</h2>
 
                 </div>
@@ -84,8 +81,9 @@
                 <div class="card-body text-center">
 
                     <h5>Completed Tasks</h5>
-
-                    <h2 class="fw-bold">@ViewBag.CompletedTasks</h2>
+                    <h2 class="fw-bold">
+                        @(ViewBag.CompletedTasks ?? 0)
+                    </h2>
 
                 </div>
 
@@ -94,10 +92,10 @@
 
     </div>
 
-    <!-- MAIN MODULES -->
+    <!-- Ana Modüller -->
     <div class="row g-4">
 
-        <!-- USERS -->
+        <!-- Kullanıcılar -->
         <div class="col-md-3">
 
             <div class="card dashboard-card shadow-lg border-0 rounded-4 h-100">
@@ -110,7 +108,10 @@
 
                     <p class="text-muted">Manage users and interns within the system.</p>
 
-                    <button onclick="location.href='@Url.Action("Index", "User")'"class="btn btn-primary w-100 py-2 rounded-pill">Users Panel</button>
+                    <button onclick="location.href='@Url.Action("Index", "User")'"
+                            class="btn btn-primary w-100 py-2 rounded-pill">
+                        Users Panel
+                    </button>
 
                 </div>
 
@@ -118,7 +119,7 @@
 
         </div>
 
-        <!-- PROJECTS -->
+        <!-- Projeler -->
         <div class="col-md-3">
 
             <div class="card dashboard-card shadow-lg border-0 rounded-4 h-100">
@@ -131,7 +132,10 @@
 
                     <p class="text-muted">Create projects and track project progress.</p>
 
-                    <button onclick="location.href='@Url.Action("Index", "Project")'" class="btn btn-success w-100 py-2 rounded-pill">Project Panel</button>
+                    <button onclick="location.href='@Url.Action("Index", "Project")'"
+                            class="btn btn-success w-100 py-2 rounded-pill">
+                        Project Panel
+                    </button>
 
                 </div>
 
@@ -139,20 +143,23 @@
 
         </div>
 
-        <!-- TASKS -->
+        <!-- Görevler -->
         <div class="col-md-3">
 
             <div class="card dashboard-card shadow-lg border-0 rounded-4 h-100">
 
                 <div class="card-body text-center p-4">
 
-                    <div class="dashboard-icon mb-3"> ✅ </div>
+                    <div class="dashboard-icon mb-3">✅</div>
 
-                    <h3 class="fw-bold"> Tasks </h3>
+                    <h3 class="fw-bold">Tasks</h3>
 
-                    <p class="text-muted"> Manage task statuses, priorities, and assignments. </p>
+                    <p class="text-muted">Manage task statuses, priorities, and assignments.</p>
 
-                    <button onclick="location.href='@Url.Action("Index", "Task")'" class="btn btn-warning text-white w-100 py-2 rounded-pill"> Task Panel </button>
+                    <button onclick="location.href='@Url.Action("Index", "Task")'"
+                            class="btn btn-warning text-white w-100 py-2 rounded-pill">
+                        Task Panel
+                    </button>
 
                 </div>
 
@@ -160,20 +167,23 @@
 
         </div>
 
-        <!-- MEMBERS -->
+        <!-- Üyeler -->
         <div class="col-md-3">
 
             <div class="card dashboard-card shadow-lg border-0 rounded-4 h-100">
 
                 <div class="card-body text-center p-4">
 
-                    <div class="dashboard-icon mb-3"> 👥 </div>
+                    <div class="dashboard-icon mb-3">👥</div>
 
-                    <h3 class="fw-bold">Members</h3>
+                    <h3 class="fw-bold">Dashboard</h3>
 
-                    <p class="text-muted">Manage user-project associations.</p>
+                    <p class="text-muted">Monitor task statuses, priorities, and user workloads.</p>
 
-                    <button onclick="location.href='@Url.Action("Index", "ProjectMember")'"class="btn btn-dark w-100 py-2 rounded-pill"> Member Panel </button>
+                    <button onclick="location.href='@Url.Action("Index", "ProjectMember")'"
+                            class="btn btn-dark w-100 py-2 rounded-pill">
+                        Dashboard Panel
+                    </button>
 
                 </div>
 

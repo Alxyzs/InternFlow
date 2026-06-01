@@ -7,40 +7,60 @@ namespace InternFlow.MVC.Controllers
     public class ProjectMemberController : Controller
     {
         private readonly IProjectMemberService _projectMemberService;
+        private readonly ITaskService _taskService;
+        private readonly IUserService _userService;
+        private readonly IProjectService _projectService;
 
-        public ProjectMemberController(IProjectMemberService projectMemberService)
+        public ProjectMemberController(
+            IProjectMemberService projectMemberService,
+            ITaskService taskService,
+            IUserService userService,
+            IProjectService projectService)
         {
             _projectMemberService = projectMemberService;
+            _taskService = taskService;
+            _userService = userService;
+            _projectService = projectService;
         }
 
-        //Listeleme
         public IActionResult Index()
         {
-            var members = _projectMemberService.GetAll();
-            return View(members);
+            ViewBag.Tasks = _taskService.GetAll();
+            ViewBag.Users = _userService.GetAll();
+            ViewBag.Projects = _projectService.GetAll();
+
+            return View();
         }
 
-        //Ekleme
         [HttpPost]
         public IActionResult Add(ProjectMember member)
         {
             try
             {
                 _projectMemberService.Add(member);
-                return RedirectToAction("Detail", "Project", new { id = member.ProjectId });
+
+                return RedirectToAction(
+                    "Detail",
+                    "Project",
+                    new { id = member.ProjectId });
             }
-            catch (Exception ex)
+            catch
             {
-                ModelState.AddModelError("", ex.Message);
-                return RedirectToAction("Detail", "Project", new { id = member.ProjectId });
+                return RedirectToAction(
+                    "Detail",
+                    "Project",
+                    new { id = member.ProjectId });
             }
         }
 
-        //Silme
         public IActionResult Delete(int id, int projectId)
         {
             _projectMemberService.Delete(id);
-            return RedirectToAction("Detail", "Project", new { id = projectId });
+
+            return RedirectToAction(
+                "Detail",
+                "Project",
+                new { id = projectId });
         }
     }
 }

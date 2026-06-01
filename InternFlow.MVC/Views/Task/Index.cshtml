@@ -21,7 +21,7 @@
 
     </div>
 
-    <!-- SEARCH BOX -->
+    <!-- Arama Kutusu -->
     <div class="mb-4">
 
         <input type="text"
@@ -93,7 +93,7 @@
 
                         </a>
 
-                        <!-- DETAILS -->
+                        <!-- Detaylar -->
                         <a asp-action="Detail"
                            asp-route-id="@item.Id"
                            class="btn btn-dark w-100">
@@ -102,7 +102,7 @@
 
                         </a>
 
-                        <!-- DELETE -->
+                        <!-- Sil -->
                         <a asp-action="Delete"
                            asp-route-id="@item.Id"
                            class="btn btn-danger w-100"
@@ -111,6 +111,30 @@
                             Delete
 
                         </a>
+
+                        <!-- Tamamlandi -->
+                    @if (item.Status != "Done")
+                        {
+                            <form asp-action="UpdateStatus" method="post" class="w-100">
+
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <input type="hidden" name="status" value="Done" />
+
+                                <button type="submit"
+                                        class="btn btn-success w-100">
+
+                                    Complete
+
+                                </button>
+
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="btn btn-success w-100 disabled">
+                                Completed
+                            </span>
+                        }
 
                     </div>
 
