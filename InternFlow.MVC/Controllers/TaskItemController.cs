@@ -7,10 +7,12 @@ namespace InternFlow.MVC.Controllers
     public class TaskController : Controller
     {
         private readonly ITaskService _taskService;
+        private readonly ICommentService _commentService;
 
-        public TaskController(ITaskService taskService)
+        public TaskController(ITaskService taskService, ICommentService commentService)
         {
             _taskService = taskService;
+            _commentService = commentService;
         }
 
         public IActionResult Index()
@@ -61,6 +63,11 @@ namespace InternFlow.MVC.Controllers
         public IActionResult Detail(int id)
         {
             var task = _taskService.GetById(id);
+            var comments = _commentService.GetAll()
+                .Where(c => c.TaskItemId == id)
+                .ToList();
+
+            ViewBag.Comments = comments;
             return View(task);
         }
 
