@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using InternFlow.MVC.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
