@@ -1,0 +1,56 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model InternFlow.EL.DBContextModels.User
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container mt-5">
+    <div class="card mx-auto p-4" style="max-width:400px;">
+
+        <h3 class="text-center mb-4">📝 Kayıt Ol</h3>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
+
+        <form method="post">
+            <div class="mb-3">
+                <label>Ad Soyad</label>
+                <input asp-for="FullName" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label>Username</label>
+                <input asp-for="Username" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label>Email</label>
+                <input asp-for="Email" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label>Password</label>
+                <input type="password" name="password" class="form-control" required />
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">Kayıt Ol</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <a asp-action="Login">Hesabın var mı? Giriş yap</a>
+        </div>
+
+    </div>
+</div>

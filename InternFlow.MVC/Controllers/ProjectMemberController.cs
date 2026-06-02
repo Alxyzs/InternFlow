@@ -1,9 +1,11 @@
 ﻿using InternFlow.BLL.Interfaces;
 using InternFlow.EL.DBContextModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InternFlow.MVC.Controllers
 {
+    [Authorize]
     public class ProjectMemberController : Controller
     {
         private readonly IProjectMemberService _projectMemberService;

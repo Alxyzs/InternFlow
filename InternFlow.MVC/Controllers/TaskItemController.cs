@@ -1,12 +1,14 @@
 ﻿using InternFlow.BLL.Interfaces;
 using InternFlow.BLL.Services;
 using InternFlow.EL.DBContextModels;
+using InternFlow.MVC.Hubs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using InternFlow.MVC.Hubs;
 
 namespace InternFlow.MVC.Controllers
 {
+    [Authorize]
     public class TaskController : Controller
     {
         private readonly ITaskService _taskService;
@@ -83,6 +85,7 @@ namespace InternFlow.MVC.Controllers
             return View(task);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Edit(TaskItem task)
         {

@@ -1,9 +1,11 @@
 ﻿using InternFlow.BLL.Interfaces;
 using InternFlow.EL.DBContextModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InternFlow.MVC.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
@@ -58,7 +60,6 @@ namespace InternFlow.MVC.Controllers
                 if (existing == null)
                     return RedirectToAction("Index");
 
-                // 🔥 CRITICAL FIX: tracked entity yerine temiz update
                 existing.FullName = user.FullName;
                 existing.Email = user.Email;
 

@@ -1,11 +1,13 @@
 using InternFlow.BLL.Interfaces;
 using InternFlow.MVC.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Linq;
 
 namespace InternFlow.MVC.Controllers
 {
+    [Authorize]//Burası login olduktan sonra erisebilinme sayfası yapmak  icin yanı ilerde admin olanlar girebilir mesala bu kontrollu koymak ıcın .
     public class HomeController : Controller
     {
         private readonly IUserService _userService;
@@ -28,7 +30,6 @@ namespace InternFlow.MVC.Controllers
             ViewBag.TotalUsers = users.Count;
             ViewBag.TotalProjects = projects.Count;
 
-            // 🔥 FIX: Dashboard ile aynı standart (Done / Active)
             ViewBag.ActiveTasks = tasks.Count(t => t.Status == "Active");
 
             ViewBag.CompletedTasks = tasks.Count(t => t.Status == "Done");
