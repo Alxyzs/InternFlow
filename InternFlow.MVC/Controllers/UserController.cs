@@ -79,5 +79,14 @@ namespace InternFlow.MVC.Controllers
             _userService.Delete(id);
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public IActionResult ChangeRole(int id, string role)
+        {
+            var user = _userService.GetById(id);
+            user.Role = role;
+            _userService.Update(user);
+            return RedirectToAction("Index");
+        }
     }
 }

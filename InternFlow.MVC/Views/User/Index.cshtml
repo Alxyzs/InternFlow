@@ -1,10 +1,9 @@
-﻿
-@{
+﻿@{
 }
 @model List<InternFlow.EL.DBContextModels.User>
 
 @{
-    ViewData["Title"] = "Kullanıcılar";
+    ViewData["Title"] = "Users";
 }
 
 <link rel="stylesheet" href="~/css/user.css" />
@@ -13,36 +12,19 @@
 
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-
         <div>
-
-            <h1 class="user-title">
-                👥 Users
-            </h1>
-
-            <p class="user-subtitle">
-                Manage users in the system
-            </p>
-
+            <h1 class="user-title">👥 Users</h1>
+            <p class="user-subtitle">Manage users in the system</p>
         </div>
-
-        <a asp-action="Create"
-           class="btn save-btn">
-
-            + New User
-
-        </a>
-
+        <a asp-action="Create" class="btn save-btn">+ New User</a>
     </div>
 
     <!-- Arama Kutusu -->
     <div class="mb-4">
-
         <input type="text"
                id="userSearch"
                class="form-control"
                placeholder="Search user..." />
-
     </div>
 
     <!-- Kullanıcı Listesi -->
@@ -51,48 +33,81 @@
         @foreach (var item in Model)
         {
             <div class="col-md-4">
-
                 <div class="card user-list-card h-100">
 
                     <div class="card-body">
 
-                        <h4 class="fw-bold mb-3">
-                            @item.FullName
-                        </h4>
+                        <h4 class="fw-bold mb-3">@item.FullName</h4>
 
-                        <p class="text-muted mb-2">
-                            📧 @item.Email
-                        </p>
+                        <p class="text-muted mb-2">📧 @item.Email</p>
 
-                        <p class="text-muted">
-                            📅 @item.CreatedAt.ToShortDateString()
-                        </p>
+                        <p class="text-muted mb-2">📅 @item.CreatedAt.ToShortDateString()</p>
+
+                        <!-- Rol Badge -->
+                        @if (item.Role == "Admin")
+                        {
+                            <span class="badge bg-danger">Admin</span>
+                        }
+                        else if (item.Role == "User")
+                        {
+                            <span class="badge bg-primary">User</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Stajyer</span>
+                        }
 
                     </div>
 
-                    <div class="card-footer bg-white border-0 d-flex gap-2">
+                    <div class="card-footer bg-white border-0">
 
-                        <a asp-action="Edit"
-                           asp-route-id="@item.Id"
-                           class="btn btn-edit w-50">
+                        <!-- Edit ve Delete -->
+                        <div class="d-flex gap-2 mb-2">
+                            <a asp-action="Edit"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-edit w-50">
+                                Edit
+                            </a>
 
-                            Edit
+                            <a asp-action="Delete"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-delete w-50"
+                                   onclick="return confirm('Are you sure you want to delete this user?');">
+                                Delete
+                            </a>
+                        </div>
 
-                        </a>
-
-                        <a asp-action="Delete"
-                           asp-route-id="@item.Id"
-                           class="btn btn-delete w-50"
-                           onclick="return confirm('Are you sure you want to delete this user?');">
-
-                            Delete
-
-                        </a>
+                        <!-- Rol Değiştir -->
+                        <form asp-action="ChangeRole" method="post" class="d-flex gap-2">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <select name="role" class="form-select form-select-sm">
+                                @if (item.Role == "Admin")
+                                {
+                                    <option value="Admin" selected>Admin</option>
+                                    <option value="User">User</option>
+                                    <option value="Stajyer">Stajyer</option>
+                                }
+                                else if (item.Role == "User")
+                                {
+                                    <option value="Admin">Admin</option>
+                                    <option value="User" selected>User</option>
+                                    <option value="Stajyer">Stajyer</option>
+                                }
+                                else
+                                {
+                                    <option value="Admin">Admin</option>
+                                    <option value="User">User</option>
+                                    <option value="Stajyer" selected>Stajyer</option>
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                Change
+                            </button>
+                        </form>
 
                     </div>
 
                 </div>
-
             </div>
         }
 
@@ -101,38 +116,21 @@
 </div>
 
 <script>
-
-    const searchInput =
-        document.getElementById("userSearch");
-
-    const userCards =
-        document.querySelectorAll(".user-list-card");
+    const searchInput = document.getElementById("userSearch");
+    const userCards = document.querySelectorAll(".user-list-card");
 
     searchInput.addEventListener("input", function () {
-
-        const value =
-            this.value.toLowerCase();
+        const value = this.value.toLowerCase();
 
         userCards.forEach(card => {
-
-            const name =
-                card.querySelector("h4")?.innerText.toLowerCase() || "";
-
-            const email =
-                card.querySelectorAll("p")[0]?.innerText.toLowerCase() || "";
+            const name = card.querySelector("h4")?.innerText.toLowerCase() || "";
+            const email = card.querySelectorAll("p")[0]?.innerText.toLowerCase() || "";
 
             if (name.includes(value) || email.includes(value)) {
-
                 card.parentElement.style.display = "";
-
             } else {
-
                 card.parentElement.style.display = "none";
-
             }
-
         });
-
     });
-
 </script>
