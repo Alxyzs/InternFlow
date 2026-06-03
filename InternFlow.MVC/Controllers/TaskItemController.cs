@@ -16,14 +16,16 @@ namespace InternFlow.MVC.Controllers
         private readonly IProjectMemberService _projectMemberService;
         private readonly IActivityLogService _activityLogService;
         private readonly IHubContext<NotificationHub> _hubContext;
+        private readonly IUserService _userService;
 
-        public TaskController(ITaskService taskService, ICommentService commentService, IProjectMemberService projectMemberService, IActivityLogService activityLogService, IHubContext<NotificationHub> hubContext)
+        public TaskController(ITaskService taskService, ICommentService commentService, IProjectMemberService projectMemberService, IActivityLogService activityLogService, IHubContext<NotificationHub> hubContext, IUserService userService)
         {
             _taskService = taskService;
             _commentService = commentService;
             _projectMemberService = projectMemberService;
             _activityLogService = activityLogService;
             _hubContext = hubContext;
+            _userService = userService;
         }
 
         public IActionResult Index()
@@ -119,10 +121,12 @@ namespace InternFlow.MVC.Controllers
                 .Where(c => c.TaskItemId == id)
                 .ToList();
 
+            var users = _userService.GetAll();
+
             ViewBag.Comments = comments;
+            ViewBag.Users = users;
             return View(task);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> UpdateStatus(int id, string status)
