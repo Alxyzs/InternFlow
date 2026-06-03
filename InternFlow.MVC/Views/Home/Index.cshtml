@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Dashboard";
 }
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
 
@@ -108,10 +109,21 @@
 
                     <p class="text-muted">Manage users and interns within the system.</p>
 
-                    <button onclick="location.href='@Url.Action("Index", "User")'"
-                            class="btn btn-primary w-100 py-2 rounded-pill">
-                        Users Panel
-                    </button>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <button onclick="location.href='@Url.Action("Index", "User")'"
+                                class="btn btn-primary w-100 py-2 rounded-pill">
+                            Users Panel
+                        </button>
+                    }
+                    else
+                    {
+                        <button onclick="showUnauthorizedAlert()"
+                                style="background-color: darkgray"
+                                class="btn btn-primary w-100 py-2 rounded-pill">
+                            Users Panel
+                        </button>
+                    }
 
                 </div>
 
@@ -194,3 +206,14 @@
     </div>
 
 </div>
+
+<script>
+    function showUnauthorizedAlert() {
+        Swal.fire({
+            title: 'Erişim Reddedildi!',
+            text: 'Bu panele erişim yetkiniz bulunmamaktadır.',
+            icon: 'error',
+            confirmButtonText: 'Tamam'
+        });
+    }
+</script>
