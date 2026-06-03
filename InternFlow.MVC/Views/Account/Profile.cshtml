@@ -1,0 +1,105 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model InternFlow.EL.DBContextModels.User
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Profile";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile - InternFlow</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body>
+
+    <div class="container mt-5">
+        <div class="card mx-auto p-4" style="max-width:500px;">
+
+            <h3 class="text-center mb-4">⚙️ Profile Settings</h3>
+
+            <!-- Rol göster, değiştirme -->
+            <div class="text-center mb-3">
+                @if (User.IsInRole("Admin"))
+                {
+                    <span class="badge bg-danger fs-6">Admin</span>
+                }
+                else if (User.IsInRole("User"))
+                {
+                    <span class="badge bg-primary fs-6">User</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary fs-6">Stajyer</span>
+                }
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <form method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <!-- Ad Soyad -->
+                <div class="mb-3">
+                    <label>Full Name</label>
+                    <input asp-for="FullName" class="form-control" required />
+                </div>
+
+                <!-- Username -->
+                <div class="mb-3">
+                    <label>Username</label>
+                    <input asp-for="Username" class="form-control" required />
+                </div>
+
+                <!-- Email -->
+                <div class="mb-3">
+                    <label>Email</label>
+                    <input asp-for="Email" class="form-control" />
+                </div>
+
+                <!-- Yeni Şifre -->
+                <div class="mb-3">
+                    <label>New Password <span class="text-muted">(leave blank to keep current)</span></label>
+                    <input type="password" name="newPassword" class="form-control" />
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+
+                <a asp-controller="Home" asp-action="Index" class="btn btn-light w-100 mt-2">Back</a>
+            </form>
+
+        </div>
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            Swal.fire({
+            title: "Done!",
+            text: "@TempData["Success"]",
+            icon: "success",
+            draggable: true
+            });
+        </script>
+    }
+</body>
+</html>

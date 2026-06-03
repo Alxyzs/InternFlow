@@ -36,6 +36,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Task" asp-action="Index">📌 Tasks</a>
                         </li>
+
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
@@ -51,6 +52,7 @@
                                 <a class="nav-link text-dark" asp-controller="ActivityLog" asp-action="Index">📜 Activity Logs</a>
                             </li>
                         }
+
                     </ul>
 
                     <!-- Sağ menü - kullanıcı bilgisi -->
@@ -72,6 +74,9 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-danger" asp-controller="Account" asp-action="Logout">🚪 Logout</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Profile">⚙️ Settings</a>
                             </li>
                         }
                     </ul>
@@ -131,7 +136,6 @@
         }
     </script>
     <!-- SignalR -->
-
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

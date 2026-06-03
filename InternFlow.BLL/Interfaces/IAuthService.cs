@@ -6,5 +6,6 @@ namespace InternFlow.BLL.Interfaces
     {
         User? Login(string username, string password);
         void Register(User user, string password);
+        string HashPassword(string password);
     }
 }

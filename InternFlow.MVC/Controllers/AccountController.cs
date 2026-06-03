@@ -1,6 +1,8 @@
 ﻿using InternFlow.BLL.Interfaces;
+using InternFlow.BLL.Services;
 using InternFlow.EL.DBContextModels;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,11 +15,13 @@ namespace InternFlow.MVC.Controllers
     {
         private readonly IAuthService _authService;
         private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
 
-        public AccountController(IAuthService authService, IConfiguration configuration)
+        public AccountController(IAuthService authService, IConfiguration configuration, IUserService userService)
         {
             _authService = authService;
             _configuration = configuration;
+            _userService = userService;
         }
 
 
@@ -105,6 +109,37 @@ namespace InternFlow.MVC.Controllers
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        //HEsab ayarlar guncelleme .
+        [Authorize]
+        public IActionResult Profile()
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            var user = _userService.GetById(userId);
+            return View(user);
+        }
+
+        
+        [Authorize]
+        [HttpPost]
+        public IActionResult Profile(User user, string? newPassword)
+        {
+            var existing = _userService.GetById(user.Id);
+
+            existing.FullName = user.FullName;
+            existing.Email = user.Email;
+            existing.Username = user.Username;
+
+            if (!string.IsNullOrEmpty(newPassword))
+            {
+                existing.Password = _authService.HashPassword(newPassword);
+            }
+
+            _userService.Update(existing);
+
+            TempData["Success"] = "Profile updated successfully!";
+            return RedirectToAction("Profile");
         }
     }
 }
