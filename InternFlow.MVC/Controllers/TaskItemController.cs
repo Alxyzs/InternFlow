@@ -146,6 +146,7 @@ namespace InternFlow.MVC.Controllers
         }
 
         //Kanban Board için 
+        [Authorize(Roles = "Admin")]
         public IActionResult Kanban()
         {
             var tasks = _taskService.GetAll();
