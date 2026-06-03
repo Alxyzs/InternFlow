@@ -92,14 +92,7 @@
 
     @if (TempData["Success"] != null)
     {
-        <script>
-            Swal.fire({
-            title: "Done!",
-            text: "@TempData["Success"]",
-            icon: "success",
-            draggable: true
-            });
-        </script>
+        <script> Swal.fire({title: "Done!",text: "@TempData["Success"]",icon: "success",draggable: true}); </script>
     }
 </body>
 </html>
