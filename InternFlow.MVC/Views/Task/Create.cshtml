@@ -4,32 +4,46 @@
 @inject IUserService userService
 @inject IProjectService projectService
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @{
     var users = userService.GetAll();
     var projects = projectService.GetAll();
+}
+
+@if (TempData["Error"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Hata',
+            text: '@TempData["Error"]',
+            confirmButtonColor: '#dc2626'
+        });
+    </script>
 }
 
 <div class="container mt-5">
 
     <div class="card p-4 mx-auto" style="max-width:650px;">
 
-        <h3>➕ Create Task </h3>
+        <h3>➕ Create Task</h3>
 
-        <form asp-action="Create" method="post">
+        <form asp-action="Create" method="post" id="taskForm">
 
-            <!-- Baslik -->
+            <!-- Title -->
             <div class="mb-3">
                 <label>Title</label>
-                <input asp-for="Title" class="form-control" />
+                <input asp-for="Title" id="title" class="form-control" />
             </div>
 
-            <!-- Aciklama -->
+            <!-- Description -->
             <div class="mb-3">
-                <label>.Description</label>
-                <textarea asp-for="Description" class="form-control"></textarea>
+                <label>Description</label>
+                <textarea asp-for="Description" id="desc" class="form-control"></textarea>
             </div>
 
-            <!-- Durum -->
+            <!-- Status -->
             <div class="mb-3">
                 <label>Status</label>
                 <select asp-for="Status" class="form-select">
@@ -39,7 +53,7 @@
                 </select>
             </div>
 
-            <!-- Oncelik -->
+            <!-- Priority -->
             <div class="mb-3">
                 <label>Priority</label>
                 <select asp-for="Priority" class="form-select">
@@ -49,7 +63,7 @@
                 </select>
             </div>
 
-            <!-- Proje Açılır Menü -->
+            <!-- Project -->
             <div class="mb-3">
                 <label>Project</label>
 
@@ -58,21 +72,17 @@
                        class="form-control mb-1"
                        placeholder="Proje ara..." />
 
-                <select asp-for="ProjectId"
-                        id="projectSelect"
-                        class="form-select">
-
+                <select asp-for="ProjectId" id="projectSelect" class="form-select">
                     <option value="">-- Select --</option>
 
                     @foreach (var p in projects)
                     {
                         <option value="@p.Id">@p.Name</option>
                     }
-
                 </select>
             </div>
 
-            <!-- Kullanici Acilir Menu -->
+            <!-- User -->
             <div class="mb-3">
                 <label>User</label>
 
@@ -81,33 +91,23 @@
                        class="form-control mb-1"
                        placeholder="Search User..." />
 
-                <select asp-for="AssignedUserId"
-                        id="userSelect"
-                        class="form-select">
-
+                <select asp-for="AssignedUserId" id="userSelect" class="form-select">
                     <option value="">-- Select --</option>
 
                     @foreach (var u in users)
                     {
                         <option value="@u.Id">@u.FullName</option>
                     }
-
                 </select>
             </div>
 
+            <!-- Due Date -->
             <div class="mb-3">
-
-                <label class="form-label">
-                    Due Date
-                </label>
-
-                <input asp-for="DueDate"
-                       type="date"
-                       class="form-control" />
-
+                <label>Due Date</label>
+                <input asp-for="DueDate" type="date" class="form-control" />
             </div>
 
-            <button class="btn btn-success w-100">
+            <button type="submit" class="btn btn-success w-100">
                 Save
             </button>
 
@@ -116,6 +116,31 @@
     </div>
 
 </div>
+
+<script>
+
+    document.getElementById("taskForm").addEventListener("submit", function (e) {
+
+        const title = document.getElementById("title").value.trim();
+        const desc = document.getElementById("desc").value.trim();
+
+        if (!title || !desc) {
+            e.preventDefault();
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Boş Gönderilemez',
+                text: 'Lütfen Tüm Alanları Doldurunuz.',
+                confirmButtonColor: '#f59e0b'
+            });
+        }
+    });
+
+</script>
+
+<!-- =========================
+     SEARCH FILTER
+========================= -->
 
 <script>
 
@@ -129,9 +154,7 @@
             const value = this.value.toLowerCase();
 
             for (let i = 0; i < select.options.length; i++) {
-
                 const text = select.options[i].text.toLowerCase();
-
                 select.options[i].hidden = !text.includes(value);
             }
 

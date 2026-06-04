@@ -1,6 +1,4 @@
-﻿@{
-}
-@model List<InternFlow.EL.DBContextModels.User>
+﻿@model List<InternFlow.EL.DBContextModels.User>
 
 @{
     ViewData["Title"] = "Users";
@@ -10,16 +8,19 @@
 
 <div class="container mt-5">
 
-    <!-- Header -->
+    <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
+
         <div>
             <h1 class="user-title">👥 Users</h1>
             <p class="user-subtitle">Manage users in the system</p>
         </div>
+
         <a asp-action="Create" class="btn save-btn">+ New User</a>
+
     </div>
 
-    <!-- Arama Kutusu -->
+    <!-- SEARCH -->
     <div class="mb-4">
         <input type="text"
                id="userSearch"
@@ -27,23 +28,32 @@
                placeholder="Search user..." />
     </div>
 
-    <!-- Kullanıcı Listesi -->
-    <div class="row g-4">
+    <!-- USERS -->
+    <div class="row g-4" id="userContainer">
 
         @foreach (var item in Model)
         {
-            <div class="col-md-4">
+            <div class="col-md-4 user-item"
+                 data-name="@item.FullName"
+                 data-email="@item.Email"
+                 data-role="@item.Role">
+
                 <div class="card user-list-card h-100">
 
                     <div class="card-body">
 
-                        <h4 class="fw-bold mb-3">@item.FullName</h4>
+                        <h4 class="fw-bold mb-3">
+                            @item.FullName
+                        </h4>
 
-                        <p class="text-muted mb-2">📧 @item.Email</p>
+                        <p class="text-muted mb-2">
+                            📧 @item.Email
+                        </p>
 
-                        <p class="text-muted mb-2">📅 @item.CreatedAt.ToShortDateString()</p>
+                        <p class="text-muted mb-2">
+                            📅 @item.CreatedAt.ToShortDateString()
+                        </p>
 
-                        <!-- Rol Badge -->
                         @if (item.Role == "Admin")
                         {
                             <span class="badge bg-danger">Admin</span>
@@ -61,48 +71,37 @@
 
                     <div class="card-footer bg-white border-0">
 
-                        <!-- Edit ve Delete -->
                         <div class="d-flex gap-2 mb-2">
+
                             <a asp-action="Edit"
-                                   asp-route-id="@item.Id"
-                                   class="btn btn-edit w-50">
+                               asp-route-id="@item.Id"
+                               class="btn btn-edit w-50">
                                 Edit
                             </a>
 
                             <a asp-action="Delete"
-                                   asp-route-id="@item.Id"
-                                   class="btn btn-delete w-50"
-                                   onclick="return confirm('Are you sure you want to delete this user?');">
+                               asp-route-id="@item.Id"
+                               class="btn btn-delete w-50"
+                               onclick="return confirm('Delete user?');">
                                 Delete
                             </a>
+
                         </div>
 
-                        <!-- Rol Değiştir -->
                         <form asp-action="ChangeRole" method="post" class="d-flex gap-2">
+
                             <input type="hidden" name="id" value="@item.Id" />
+
                             <select name="role" class="form-select form-select-sm">
-                                @if (item.Role == "Admin")
-                                {
-                                    <option value="Admin" selected>Admin</option>
-                                    <option value="User">User</option>
-                                    <option value="Stajyer">Stajyer</option>
-                                }
-                                else if (item.Role == "User")
-                                {
-                                    <option value="Admin">Admin</option>
-                                    <option value="User" selected>User</option>
-                                    <option value="Stajyer">Stajyer</option>
-                                }
-                                else
-                                {
-                                    <option value="Admin">Admin</option>
-                                    <option value="User">User</option>
-                                    <option value="Stajyer" selected>Stajyer</option>
-                                }
+                                <option value="Admin" selected="@(item.Role == "Admin")">Admin</option>
+                                <option value="User" selected="@(item.Role == "User")">User</option>
+                                <option value="Stajyer" selected="@(item.Role == "Stajyer")">Stajyer</option>
                             </select>
+
                             <button type="submit" class="btn btn-sm btn-primary">
                                 Change
                             </button>
+
                         </form>
 
                     </div>
@@ -113,24 +112,98 @@
 
     </div>
 
+    <!-- PAGINATION -->
+    <div id="userPagination" class="mt-4"></div>
+
 </div>
 
 <script>
-    const searchInput = document.getElementById("userSearch");
-    const userCards = document.querySelectorAll(".user-list-card");
 
+    const items = Array.from(document.querySelectorAll(".user-item"));
+    const searchInput = document.getElementById("userSearch");
+
+    let currentPage = 1;
+    const itemsPerPage = 6;
+    let filteredItems = [...items];
+
+    // RENDER
+    function render() {
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+
+        items.forEach(i => i.style.display = "none");
+
+        filteredItems.slice(start, end).forEach(i => i.style.display = "");
+
+        renderPagination();
+    }
+
+    // PAGINATION
+    function renderPagination() {
+
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+
+        let html = `<ul class="pagination justify-content-center">`;
+
+        html += `
+            <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+                <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Prev</a>
+            </li>
+        `;
+
+        for (let i = 1; i <= totalPages; i++) {
+
+            html += `
+                <li class="page-item ${i === currentPage ? "active" : ""}">
+                    <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                </li>
+            `;
+        }
+
+        html += `
+            <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
+                <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>
+            </li>
+        `;
+
+        html += `</ul>`;
+
+        document.getElementById("userPagination").innerHTML = html;
+    }
+
+    // PAGE CHANGE
+    function changePage(page) {
+
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+
+        if (page < 1 || page > totalPages) return;
+
+        currentPage = page;
+        render();
+    }
+
+    // GLOBAL SEARCH
     searchInput.addEventListener("input", function () {
+
         const value = this.value.toLowerCase();
 
-        userCards.forEach(card => {
-            const name = card.querySelector("h4")?.innerText.toLowerCase() || "";
-            const email = card.querySelectorAll("p")[0]?.innerText.toLowerCase() || "";
+        filteredItems = items.filter(item => {
 
-            if (name.includes(value) || email.includes(value)) {
-                card.parentElement.style.display = "";
-            } else {
-                card.parentElement.style.display = "none";
-            }
+            const name = item.dataset.name.toLowerCase();
+            const email = item.dataset.email.toLowerCase();
+            const role = item.dataset.role.toLowerCase();
+
+            return name.includes(value) ||
+                   email.includes(value) ||
+                   role.includes(value);
         });
+
+        currentPage = 1;
+        render();
     });
+
+    // INIT
+    render();
+
 </script>
