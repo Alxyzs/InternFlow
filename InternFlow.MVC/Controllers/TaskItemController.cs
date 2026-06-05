@@ -72,6 +72,7 @@ namespace InternFlow.MVC.Controllers
                     }
                 }
 
+                TempData["Success"] = "Task created successfully.";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -103,7 +104,13 @@ namespace InternFlow.MVC.Controllers
 
             _taskService.Update(existing);
 
-            await _hubContext.Clients.All.SendAsync("ReceiveStatusUpdate", task.Id, task.Status, task.Title);
+            await _hubContext.Clients.All.SendAsync(
+                "ReceiveStatusUpdate",
+                task.Id,
+                task.Status,
+                task.Title);
+
+            TempData["Success"] = "Task updated successfully.";
 
             return RedirectToAction("Index");
         }
@@ -111,6 +118,9 @@ namespace InternFlow.MVC.Controllers
         public IActionResult Delete(int id)
         {
             _taskService.Delete(id);
+
+            TempData["Success"] = "Task deleted successfully.";
+
             return RedirectToAction("Index");
         }
 
@@ -144,7 +154,13 @@ namespace InternFlow.MVC.Controllers
             });
 
             // SignalR ile herkese bildir
-            await _hubContext.Clients.All.SendAsync("ReceiveStatusUpdate", id, status, task.Title);
+            await _hubContext.Clients.All.SendAsync(
+                "ReceiveStatusUpdate",
+                id,
+                status,
+                task.Title);
+
+            TempData["Success"] = $"{task.Title} completed.";
 
             return RedirectToAction("Index");
         }

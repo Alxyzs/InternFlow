@@ -224,3 +224,12 @@
     render();
 
 </script>
+
+@if (TempData["Success"] != null)
+{
+    <script>
+        window.onload = function () {
+            toastr.success('@TempData["Success"]');
+        };
+    </script>
+}

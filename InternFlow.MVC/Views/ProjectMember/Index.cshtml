@@ -198,3 +198,10 @@
     </div>
 
 </div>
+
+@if (TempData["Success"] != null)
+{
+    <script>
+        toastr.success(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["Success"])));
+    </script>
+}

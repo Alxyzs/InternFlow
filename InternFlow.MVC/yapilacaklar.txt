@@ -10,5 +10,5 @@
  - Tasklar ekranı acıldıgında direk hepsı gelmesı ılerde sorun oluyor o yudden sağ tarafa 1-10 , 11-20 gibi secenekler koy veya Load More.. diye
  - Kullanıcı bir proje Mesaj attıgında eğer o proje uyesı ıse XX-ProjeSahıbı eğer değilse XX-Misafir diye gozuksun .
  - SİgnalR Hub'dan haber geldıgınde örn task degııstıgınde Status'un Kanban'dan dıger kullancııda otomatık yenılenmıyordu o yapılacak .
- - Kullanıcıya bırsey kaydetme yapıldıgında veya silindıgınde SweetAlert2 gostertılecek Heryerde .
+ - Kullanıcıya bırsey kaydetme yapıldıgında veya silindıgınde SweetAlert2 gostertılecek Heryerde . (kısmen tamamlandı)
  - Task sayfası ıcın yenı cshtmlerre gerek yok dırek Model olarka gosterılsın .

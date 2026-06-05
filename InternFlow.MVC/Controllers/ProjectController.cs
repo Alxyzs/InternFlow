@@ -1,82 +1,95 @@
-﻿using InternFlow.BLL.Interfaces;
-using InternFlow.EL.DBContextModels;
-using InternFlow.MVC.Hubs;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
+﻿    using InternFlow.BLL.Interfaces;
+    using InternFlow.EL.DBContextModels;
+    using InternFlow.MVC.Hubs;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
 
-namespace InternFlow.MVC.Controllers
-{
-    [Authorize]
-    public class ProjectController : Controller
+    namespace InternFlow.MVC.Controllers
     {
-        private readonly IProjectService _projectService;
-        private readonly IHubContext<NotificationHub> _hubContext;
-
-        public ProjectController(IProjectService projectService, IHubContext<NotificationHub> hubContext)
+        [Authorize]
+        public class ProjectController : Controller
         {
-            _projectService = projectService;
-            _hubContext = hubContext;
-        }
+            private readonly IProjectService _projectService;
+            private readonly IHubContext<NotificationHub> _hubContext;
 
-
-        public IActionResult Index(string status)
-        {
-            var projects = _projectService.GetAll();
-
-            if (!string.IsNullOrEmpty(status))
+            public ProjectController(IProjectService projectService, IHubContext<NotificationHub> hubContext)
             {
-                projects = projects
-                    .Where(p => p.Status == status)
-                    .ToList();
+                _projectService = projectService;
+                _hubContext = hubContext;
             }
 
-            ViewBag.CurrentFilter = status;
 
-            return View(projects);
-        }
-
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> Create(Project project)
-        {
-            try
+            public IActionResult Index(string status)
             {
-                _projectService.Add(project);
-                await _hubContext.Clients.All.SendAsync("ReceiveProjectNotification", project.Name);
-                return RedirectToAction("Index");
+                var projects = _projectService.GetAll();
+
+                if (!string.IsNullOrEmpty(status))
+                {
+                    projects = projects
+                        .Where(p => p.Status == status)
+                        .ToList();
+                }
+
+                ViewBag.CurrentFilter = status;
+
+                return View(projects);
             }
-            catch (Exception ex)
+
+            public IActionResult Create()
             {
-                ModelState.AddModelError("", ex.Message);
+                return View();
+            }
+
+
+            [HttpPost]
+            public async Task<IActionResult> Create(Project project)
+            {
+                try
+                {
+                    _projectService.Add(project);
+
+                    TempData["Success"] = "Project created successfully.";
+
+                    await _hubContext.Clients.All.SendAsync(
+                        "ReceiveProjectNotification",
+                        project.Name
+                    );
+
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return View(project);
+                }
+            }
+
+            public IActionResult Edit(int id)
+            {
+                var project = _projectService.GetById(id);
                 return View(project);
             }
-        }
-
-        public IActionResult Edit(int id)
-        {
-            var project = _projectService.GetById(id);
-            return View(project);
-        }
 
 
-        [HttpPost]
-        public IActionResult Edit(Project project)
-        {
-            _projectService.Update(project);
-            return RedirectToAction("Index");
-        }
+            [HttpPost]
+            public IActionResult Edit(Project project)
+            {
+                _projectService.Update(project);
 
- 
-        public IActionResult Delete(int id)
-        {
-            _projectService.Delete(id);
-            return RedirectToAction("Index");
+                TempData["Success"] = "Project updated successfully.";
+
+                return RedirectToAction("Index");
+            }
+
+
+           public IActionResult Delete(int id)
+    {
+        _projectService.Delete(id);
+
+        TempData["Success"] = "Project deleted successfully.";
+
+        return RedirectToAction("Index");
+    }
         }
     }
-}
