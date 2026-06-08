@@ -114,8 +114,24 @@ namespace InternFlow.MVC.Controllers
                 existing.ProjectId = task.ProjectId;
                 _taskService.Update(existing);
 
-                await _hubContext.Clients.All.SendAsync("ReceiveStatusUpdate", task.Id, task.Status, task.Title);
 
+                if (task.AssignedUserId.HasValue)
+                {
+                    var isMember = _projectMemberService.GetAll()
+                        .Any(pm => pm.ProjectId == task.ProjectId
+                                && pm.UserId == task.AssignedUserId.Value);
+
+                    if (!isMember)
+                    {
+                        _projectMemberService.Add(new ProjectMember
+                        {
+                            ProjectId = task.ProjectId,
+                            UserId = task.AssignedUserId.Value
+                        });
+                    }
+                }
+
+                await _hubContext.Clients.All.SendAsync("ReceiveStatusUpdate", task.Id, task.Status, task.Title);
                 TempData["Success"] = "Task updated successfully.";
             }
             catch (Exception ex)
@@ -147,11 +163,17 @@ namespace InternFlow.MVC.Controllers
                 .ToList();
 
             var users = _userService.GetAll();
+            var projectMembers = _projectMemberService.GetAll()
+                .Where(pm => pm.ProjectId == task.ProjectId)
+                .ToList();
 
             ViewBag.Comments = comments;
             ViewBag.Users = users;
+            ViewBag.ProjectMembers = projectMembers;
+
             return View(task);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> UpdateStatus(int id, string status)
