@@ -10,22 +10,19 @@
 
     <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-
         <div>
             <h1 class="user-title">👥 Users</h1>
             <p class="user-subtitle">Manage users in the system</p>
         </div>
-
-        <a asp-action="Create" class="btn save-btn">+ New User</a>
-
+        <!-- + New User artık modal açıyor -->
+        <button type="button" class="btn save-btn" data-bs-toggle="modal" data-bs-target="#createUserModal">
+            + New User
+        </button>
     </div>
 
     <!-- SEARCH -->
     <div class="mb-4">
-        <input type="text"
-               id="userSearch"
-               class="form-control"
-               placeholder="Search user..." />
+        <input type="text" id="userSearch" class="form-control" placeholder="Search user..." />
     </div>
 
     <!-- USERS -->
@@ -39,20 +36,10 @@
                  data-role="@item.Role">
 
                 <div class="card user-list-card h-100">
-
                     <div class="card-body">
-
-                        <h4 class="fw-bold mb-3">
-                            @item.FullName
-                        </h4>
-
-                        <p class="text-muted mb-2">
-                            📧 @item.Email
-                        </p>
-
-                        <p class="text-muted mb-2">
-                            📅 @item.CreatedAt.ToShortDateString()
-                        </p>
+                        <h4 class="fw-bold mb-3">@item.FullName</h4>
+                        <p class="text-muted mb-2">📧 @item.Email</p>
+                        <p class="text-muted mb-2">📅 @item.CreatedAt.ToShortDateString()</p>
 
                         @if (item.Role == "Admin")
                         {
@@ -66,32 +53,29 @@
                         {
                             <span class="badge bg-secondary">Stajyer</span>
                         }
-
                     </div>
 
                     <div class="card-footer bg-white border-0">
-
                         <div class="d-flex gap-2 mb-2">
 
-                            <a asp-action="Edit"
-                                   asp-route-id="@item.Id"
-                                   class="btn btn-edit w-50">
+                            <!-- Edit butonu: modal açar, veriyi doldurur -->
+                            <button type="button"
+                                    class="btn btn-edit w-50"
+                                    onclick="openEditModal('@item.Id', '@Html.Raw(item.FullName)', '@item.Email')">
                                 Edit
-                            </a>
+                            </button>
 
                             <a asp-action="Delete"
-                                   asp-route-id="@item.Id"
-                                   class="btn btn-delete w-50"
-                                   onclick="return confirm('Delete user?');">
+                               asp-route-id="@item.Id"
+                               class="btn btn-delete w-50"
+                               onclick="return confirm('Delete user?');">
                                 Delete
                             </a>
 
                         </div>
 
                         <form asp-action="ChangeRole" method="post" class="d-flex gap-2">
-
                             <input type="hidden" name="id" value="@item.Id" />
-
                             <select name="role" class="form-select form-select-sm">
                                 @foreach (var role in Enum.GetValues<InternFlow.EL.Enums.UserRole>())
                                 {
@@ -105,15 +89,9 @@
                                     }
                                 }
                             </select>
-
-                            <button type="submit" class="btn btn-sm btn-primary">
-                                Change
-                            </button>
-
+                            <button type="submit" class="btn btn-sm btn-primary">Change</button>
                         </form>
-
                     </div>
-
                 </div>
             </div>
         }
@@ -125,8 +103,91 @@
 
 </div>
 
-<script>
 
+<!-- ===================== CREATE MODAL ===================== -->
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="createUserModalLabel">👤 New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form asp-action="Create" method="post">
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input name="FullName" class="form-control custom-input" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input name="Email" type="email" class="form-control custom-input" required />
+                    </div>
+
+                </div>
+
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn back-btn" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn save-btn">Create User</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- ===================== EDIT MODAL ===================== -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="editUserModalLabel">✏️ Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form asp-action="Edit" method="post">
+                <div class="modal-body">
+
+                    <input type="hidden" id="editUserId" name="Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input id="editFullName" name="FullName" class="form-control custom-input" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input id="editEmail" name="Email" type="email" class="form-control custom-input" required />
+                    </div>
+
+                </div>
+
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn back-btn" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn save-btn">Update</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Edit modalını aç ve alanları doldur
+    function openEditModal(id, fullName, email) {
+        document.getElementById('editUserId').value = id;
+        document.getElementById('editFullName').value = fullName;
+        document.getElementById('editEmail').value = email;
+        new bootstrap.Modal(document.getElementById('editUserModal')).show();
+    }
+
+    // --- Pagination & Search (değişmedi) ---
     const items = Array.from(document.querySelectorAll(".user-item"));
     const searchInput = document.getElementById("userSearch");
 
@@ -134,84 +195,46 @@
     const itemsPerPage = 6;
     let filteredItems = [...items];
 
-    // RENDER
     function render() {
-
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
-
         items.forEach(i => i.style.display = "none");
-
         filteredItems.slice(start, end).forEach(i => i.style.display = "");
-
         renderPagination();
     }
 
-    // PAGINATION
     function renderPagination() {
-
         const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-
         let html = `<ul class="pagination justify-content-center">`;
-
-        html += `
-                <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Prev</a>
-                </li>
-            `;
-
+        html += `<li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Prev</a></li>`;
         for (let i = 1; i <= totalPages; i++) {
-
-            html += `
-                    <li class="page-item ${i === currentPage ? "active" : ""}">
-                        <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
-                    </li>
-                `;
+            html += `<li class="page-item ${i === currentPage ? "active" : ""}">
+                        <a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`;
         }
-
-        html += `
-                <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>
-                </li>
-            `;
-
+        html += `<li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a></li>`;
         html += `</ul>`;
-
         document.getElementById("userPagination").innerHTML = html;
     }
 
-    // PAGE CHANGE
     function changePage(page) {
-
         const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-
         if (page < 1 || page > totalPages) return;
-
         currentPage = page;
         render();
     }
 
-    // GLOBAL SEARCH
-    searchInput.addEventListener("input", function() {
-
+    searchInput.addEventListener("input", function () {
         const value = this.value.toLowerCase();
-
         filteredItems = items.filter(item => {
-
-            const name = item.dataset.name.toLowerCase();
-            const email = item.dataset.email.toLowerCase();
-            const role = item.dataset.role.toLowerCase();
-
-            return name.includes(value) ||
-                email.includes(value) ||
-                role.includes(value);
+            return item.dataset.name.toLowerCase().includes(value) ||
+                   item.dataset.email.toLowerCase().includes(value) ||
+                   item.dataset.role.toLowerCase().includes(value);
         });
-
         currentPage = 1;
         render();
     });
 
-    // INIT
     render();
-
 </script>
