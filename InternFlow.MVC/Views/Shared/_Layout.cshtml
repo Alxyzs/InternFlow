@@ -131,6 +131,27 @@
 
         connection.on("ReceiveStatusUpdate", function(taskId, newStatus, taskTitle) {
         toastr.info(`"${taskTitle}" status changed to ${newStatus}`, "Task Update");
+
+        // O task kartını bul ve badge'i güncelle
+        const card = document.querySelector(`.task-card[data-id="${taskId}"]`);
+        if (card) {
+        card.dataset.status = newStatus;
+
+        const badge = card.querySelector(".status-badge");
+        if (badge) badge.textContent = newStatus;
+
+        if (newStatus === "Completed") {
+        const completeBtnArea = card.querySelector(".complete-btn-area");
+        if (completeBtnArea) {
+        completeBtnArea.innerHTML = `<span class="btn btn-success w-100 disabled">Completed</span>`;
+        }
+        }
+        }
+
+        if (window.location.pathname.includes("/Task")) {
+        sessionStorage.setItem("scrollPos", window.scrollY);
+        setTimeout(() => location.reload(), 2000);
+        }
         });
 
         connection.on("ReceiveComment", function(taskId, comment) {
@@ -139,11 +160,23 @@
 
         connection.on("ReceiveProjectNotification", function(projectName) {
         toastr.info(`"${projectName}" created`, "Project Notification");
+
+        if (window.location.pathname.includes("/Project")) {
+        sessionStorage.setItem("scrollPos", window.scrollY);
+        setTimeout(() => location.reload(), 2000);
+        }
+        });
+
+        window.addEventListener("load", function() {
+        const scrollPos = sessionStorage.getItem("scrollPos");
+        if (scrollPos) {
+        window.scrollTo(0, parseInt(scrollPos));
+        sessionStorage.removeItem("scrollPos");
+        }
         });
 
         connection.start().catch(err => console.error(err));
     </script>
-
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

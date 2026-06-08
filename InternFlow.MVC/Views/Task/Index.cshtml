@@ -8,7 +8,6 @@
 @{
     var users = userService.GetAll();
     var projects = projectService.GetAll();
-
     var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 }
 
@@ -16,21 +15,13 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>📌 Tasks</h2>
-
-        <a asp-action="Create" class="btn btn-success">
-            + New Task
-        </a>
+        <a asp-action="Create" class="btn btn-success">+ New Task</a>
     </div>
 
-    <!-- SEARCH -->
     <div class="mb-4">
-        <input type="text"
-               id="taskSearch"
-               class="form-control"
-               placeholder="Search task..." />
+        <input type="text" id="taskSearch" class="form-control" placeholder="Search task..." />
     </div>
 
-    <!-- TASK GRID -->
     <div class="row g-4" id="taskContainer">
 
         @foreach (var item in Model)
@@ -40,7 +31,9 @@
 
             <div class="col-md-4 task-card"
                  data-title="@item.Title"
-                 data-description="@item.Description">
+                 data-description="@item.Description"
+                 data-id="@item.Id"
+                 data-status="@item.Status">
 
                 <div class="card shadow-sm p-3 h-100">
 
@@ -56,7 +49,7 @@
                     <div>👤 <b>User:</b> @(user?.FullName ?? "Not Assigned")</div>
 
                     <div class="mt-2">
-                        <span class="badge bg-secondary">@item.Status</span>
+                        <span class="badge bg-secondary status-badge">@item.Status</span>
                         <span class="badge bg-info">@item.Priority</span>
                     </div>
 
@@ -65,53 +58,52 @@
                         @if (User.IsInRole("Admin") || item.AssignedUserId == currentUserId)
                         {
                             <a asp-action="Edit"
-                               asp-route-id="@item.Id"
-                               class="btn btn-primary w-100">
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-primary w-100">
                                 Edit
                             </a>
                         }
 
                         <a asp-action="Detail"
-                           asp-route-id="@item.Id"
-                           class="btn btn-dark w-100">
+                               asp-route-id="@item.Id"
+                               class="btn btn-dark w-100">
                             Details
                         </a>
 
                         @if (User.IsInRole("Admin"))
                         {
                             <a asp-action="Delete"
-                               asp-route-id="@item.Id"
-                               class="btn btn-danger w-100"
-                               onclick="return confirm('Delete task?');">
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-danger w-100"
+                                   onclick="return confirm('Delete task?');">
                                 Delete
                             </a>
                         }
 
                         @if (User.IsInRole("Admin") || item.AssignedUserId == currentUserId)
                         {
-                            @if (item.Status != "Done")
-                            {
-                                <form asp-action="UpdateStatus" method="post" class="w-100">
-                                    <input type="hidden" name="id" value="@item.Id" />
-                                    <input type="hidden" name="status" value="Done" />
-                                    <button type="submit" class="btn btn-success w-100">
-                                        Complete
-                                    </button>
-                                </form>
-                            }
-                            else
-                            {
-                                <span class="btn btn-success w-100 disabled">
-                                    Completed
-                                </span>
-                            }
+                            <div class="complete-btn-area w-100">
+                                @if (item.Status != "Completed")
+                                {
+                                    <form asp-action="UpdateStatus" method="post" class="w-100">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="status" value="Completed" />
+                                        <button type="submit" class="btn btn-success w-100">
+                                            Complete
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="btn btn-success w-100 disabled">Completed</span>
+                                }
+                            </div>
                         }
 
                     </div>
 
                     <div class="mt-2">
                         📅 <b>Due Date:</b>
-
                         @if (item.DueDate.HasValue)
                         {
                             if (item.DueDate.Value.Date < DateTime.Now.Date)
@@ -135,14 +127,11 @@
 
     </div>
 
-    <!-- PAGINATION -->
     <div id="pagination" class="mt-4"></div>
 
 </div>
 
-<!-- SCRIPT -->
 <script>
-
     const cards = Array.from(document.querySelectorAll(".task-card"));
     const searchInput = document.getElementById("taskSearch");
 
@@ -151,85 +140,45 @@
     let filteredCards = [...cards];
 
     function render() {
-
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
-
         cards.forEach(c => c.style.display = "none");
-
-        filteredCards.slice(start, end).forEach(c => {
-            c.style.display = "";
-        });
-
+        filteredCards.slice(start, end).forEach(c => c.style.display = "");
         renderPagination();
     }
 
     function renderPagination() {
-
         const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
-
         let html = `<ul class="pagination justify-content-center">`;
-
-        html += `
-            <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-                <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Prev</a>
-            </li>
-        `;
-
+        html += `<li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+                <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Prev</a></li>`;
         for (let i = 1; i <= totalPages; i++) {
-            html += `
-                <li class="page-item ${i === currentPage ? "active" : ""}">
-                    <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
-                </li>
-            `;
+            html += `<li class="page-item ${i === currentPage ? "active" : ""}">
+                    <a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`;
         }
-
-        html += `
-            <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-                <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>
-            </li>
-        `;
-
+        html += `<li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
+                <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a></li>`;
         html += `</ul>`;
-
         document.getElementById("pagination").innerHTML = html;
     }
 
     function changePage(page) {
-
         const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
-
         if (page < 1 || page > totalPages) return;
-
         currentPage = page;
         render();
     }
 
-    searchInput.addEventListener("input", function () {
-
+    searchInput.addEventListener("input", function() {
         const value = this.value.toLowerCase();
-
         filteredCards = cards.filter(card => {
-
             const title = card.dataset.title.toLowerCase();
             const desc = card.dataset.description.toLowerCase();
-
             return title.includes(value) || desc.includes(value);
         });
-
         currentPage = 1;
         render();
     });
 
     render();
-
 </script>
-
-@if (TempData["Success"] != null)
-{
-    <script>
-        window.onload = function () {
-            toastr.success('@TempData["Success"]');
-        };
-    </script>
-}

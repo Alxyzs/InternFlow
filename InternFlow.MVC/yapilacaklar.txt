@@ -6,23 +6,22 @@
 
  - ADMİN KONTROLLERİ İCİN ENUM EKLENCEK eğer Auth ıcınde Admın farklı sekıllerde yazılmıs olma ıhtımalıne karsı . Tamamdır Bu Oldu Enum eklendi - ✔
 
- - Toaster Eklenecek POPUP mesajları için Değiştirildi , silindi şeyleri için .
+ - Toaster Eklenecek POPUP mesajları için Değiştirildi , silindi şeyleri için .  ✔
 
  - Kanban'da Complete göturulen Task Completed olarak ısaretlenmıyor yanı Buton pasif olmuyor 
 
  - Kullanıcı Task'a gırıdgı zaman önce kendine atanana'nı daha sonra yukardan diğer projler dediğinde diğer hepsını gorebilsin .
 
- - Tasklar ekranı acıldıgında direk hepsı gelmesı ılerde sorun oluyor o yudden sağ tarafa 1-10 , 11-20 gibi secenekler koy veya Load More.. diye
+ - Tasklar ekranı acıldıgında direk hepsı gelmesı ılerde sorun oluyor o yudden sağ tarafa 1-10 , 11-20 gibi secenekler koy veya Load More.. diye -  ✔
 
  - Kullanıcı bir proje Mesaj attıgında eğer o proje uyesı ıse XX-ProjeSahıbı eğer değilse XX-Misafir diye gozuksun .
 
  - SİgnalR Hub'dan haber geldıgınde örn task degııstıgınde Status'un Kanban'dan dıger kullancııda otomatık yenılenmıyordu o yapılacak .
 
- - Kullanıcıya bırsey kaydetme yapıldıgında veya silindıgınde SweetAlert2 gostertılecek Heryerde . (kısmen tamamlandı)
+ - Kullanıcıya bırsey kaydetme yapıldıgında veya silindıgınde SweetAlert2 gostertılecek Heryerde . (kısmen tamamlandı)  -  ✔
 
- - Task sayfası ıcın yenı cshtmlerre gerek yok dırek Model olarka gosterılsın .
+ - Task sayfası ıcın yenı cshtmlerre gerek yok dırek Model olarka gosterılsın . 
 
-  - Toaster Eklenecek POPUP mesajları için Değiştirildi , silindi şeyleri için .
 
   YENİ EKLENECEK OLAN ; 
   -------------------
