@@ -22,20 +22,44 @@
         <input type="text" id="taskSearch" class="form-control" placeholder="Search task..." />
     </div>
 
-    <div class="row g-4" id="taskContainer">
+    <!-- MY TASKS -->
+    <div id="myTasksSection">
+        <h4 class="mb-3"> My Tasks</h4>
+        <div class="row g-4" id="myTaskContainer"></div>
+        <div id="noMyTasks" class="alert alert-info text-center mb-4" style="display:none;">
+            You have no tasks assigned to you.
+        </div>
+    </div>
 
+    <!-- OTHER TASKS -->
+    <div id="otherTasksSection" class="mt-4">
+        <h4 class="mb-3"> Other Tasks</h4>
+        <div class="row g-4" id="otherTaskContainer"></div>
+        <div id="noOtherTasks" class="alert alert-secondary text-center mb-4" style="display:none;">
+            No other tasks found.
+        </div>
+    </div>
+
+    <div style="display:none" id="taskContainer">
         @foreach (var item in Model)
         {
             var project = projects.FirstOrDefault(x => x.Id == item.ProjectId);
             var user = users.FirstOrDefault(x => x.Id == item.AssignedUserId);
+            var isMyTask = item.AssignedUserId == currentUserId;
 
             <div class="col-md-4 task-card"
                  data-title="@item.Title"
                  data-description="@item.Description"
                  data-id="@item.Id"
-                 data-status="@item.Status">
+                 data-status="@item.Status"
+                 data-mine="@isMyTask.ToString().ToLower()">
 
-                <div class="card shadow-sm p-3 h-100">
+                <div class="card shadow-sm p-3 h-100 @(isMyTask ? "border-primary" : "")">
+
+                    @if (isMyTask)
+                    {
+                        <span class="badge bg-primary mb-2" style="width:fit-content;">My Task</span>
+                    }
 
                     <h5>@item.Title</h5>
 
@@ -88,9 +112,7 @@
                                     <form asp-action="UpdateStatus" method="post" class="w-100">
                                         <input type="hidden" name="id" value="@item.Id" />
                                         <input type="hidden" name="status" value="Completed" />
-                                        <button type="submit" class="btn btn-success w-100">
-                                            Complete
-                                        </button>
+                                        <button type="submit" class="btn btn-success w-100">Complete</button>
                                     </form>
                                 }
                                 else
@@ -124,7 +146,6 @@
                 </div>
             </div>
         }
-
     </div>
 
     <div id="pagination" class="mt-4"></div>
@@ -132,23 +153,48 @@
 </div>
 
 <script>
-    const cards = Array.from(document.querySelectorAll(".task-card"));
+    const allCards = Array.from(document.querySelectorAll(".task-card"));
+    const myContainer = document.getElementById("myTaskContainer");
+    const otherContainer = document.getElementById("otherTaskContainer");
+    const noMyTasks = document.getElementById("noMyTasks");
+    const noOtherTasks = document.getElementById("noOtherTasks");
     const searchInput = document.getElementById("taskSearch");
 
+    const myCards = allCards.filter(c => c.dataset.mine === "true");
+    const otherCards = allCards.filter(c => c.dataset.mine === "false");
+
+    // Kartları doğru containerlara taşı
+    myCards.forEach(c => {
+        c.style.display = "";
+        myContainer.appendChild(c);
+    });
+    otherCards.forEach(c => {
+        c.style.display = "";
+        otherContainer.appendChild(c);
+    });
+
+    if (myCards.length === 0) noMyTasks.style.display = "";
+    if (otherCards.length === 0) noOtherTasks.style.display = "";
+
+    // Pagination sadece Other Tasks için
     let currentPage = 1;
     const itemsPerPage = 6;
-    let filteredCards = [...cards];
+    let filteredCards = [...otherCards];
 
     function render() {
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
-        cards.forEach(c => c.style.display = "none");
+        otherCards.forEach(c => c.style.display = "none");
         filteredCards.slice(start, end).forEach(c => c.style.display = "");
         renderPagination();
     }
 
     function renderPagination() {
         const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
+        if (totalPages <= 1) {
+            document.getElementById("pagination").innerHTML = "";
+            return;
+        }
         let html = `<ul class="pagination justify-content-center">`;
         html += `<li class="page-item ${currentPage === 1 ? "disabled" : ""}">
                 <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Prev</a></li>`;
@@ -171,7 +217,7 @@
 
     searchInput.addEventListener("input", function() {
         const value = this.value.toLowerCase();
-        filteredCards = cards.filter(card => {
+        filteredCards = otherCards.filter(card => {
             const title = card.dataset.title.toLowerCase();
             const desc = card.dataset.description.toLowerCase();
             return title.includes(value) || desc.includes(value);

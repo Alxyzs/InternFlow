@@ -5,6 +5,7 @@ using InternFlow.MVC.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 
 namespace InternFlow.MVC.Controllers
 {
@@ -30,8 +31,17 @@ namespace InternFlow.MVC.Controllers
 
         public IActionResult Index()
         {
-            var tasks = _taskService.GetAll();
-            return View(tasks);
+            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+            var allTasks = _taskService.GetAll();
+
+            var myTasks = allTasks.Where(t => t.AssignedUserId == currentUserId).ToList();
+            var otherTasks = allTasks.Where(t => t.AssignedUserId != currentUserId).ToList();
+
+            ViewBag.MyTasks = myTasks;
+            ViewBag.OtherTasks = otherTasks;
+
+            return View(allTasks);
         }
 
         public IActionResult Create()
