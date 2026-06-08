@@ -70,7 +70,21 @@
                     <hr />
 
                     <div>📁 <b>Project:</b> @(project?.Name ?? "Not Assigned")</div>
-                    <div>👤 <b>User:</b> @(user?.FullName ?? "Not Assigned")</div>
+                    @{
+                        var taskAssignees = ViewBag.TaskAssignees as List<InternFlow.EL.DBContextModels.TaskAssignee>;
+                        var assigneeNames = taskAssignees?.Where(ta => ta.TaskItemId == item.Id).Select(ta => users.FirstOrDefault(u => u.Id == ta.UserId)?.FullName ?? "").Where(n => !string.IsNullOrEmpty(n)).ToList();
+                    }
+                    <div>
+                        👤 <b>Users:</b>
+                        @if (assigneeNames != null && assigneeNames.Any())
+                        {
+                            @string.Join(", ", assigneeNames)
+                        }
+                        else
+                        {
+                            <span> @(user?.FullName ?? "Not Assigned") </span>
+                        }
+                    </div>
 
                     <div class="mt-2">
                         <span class="badge bg-secondary status-badge">@item.Status</span>

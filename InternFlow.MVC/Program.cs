@@ -67,6 +67,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
     builder.Services.AddScoped<IActivityLogService, ActivityLogService>();
     builder.Services.AddScoped<IProjectMemberService, ProjectMemberService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<ITaskAssigneeService, TaskAssigneeService>();
 //
 
 //Viewler kullanmak yerine Swagger olusutruldu

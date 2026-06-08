@@ -18,8 +18,9 @@ namespace InternFlow.MVC.Controllers
         private readonly IActivityLogService _activityLogService;
         private readonly IHubContext<NotificationHub> _hubContext;
         private readonly IUserService _userService;
+        private readonly ITaskAssigneeService _taskAssigneeService;
 
-        public TaskController(ITaskService taskService, ICommentService commentService, IProjectMemberService projectMemberService, IActivityLogService activityLogService, IHubContext<NotificationHub> hubContext, IUserService userService)
+        public TaskController(ITaskService taskService, ICommentService commentService, IProjectMemberService projectMemberService, IActivityLogService activityLogService, IHubContext<NotificationHub> hubContext, IUserService userService, ITaskAssigneeService taskAssigneeService)
         {
             _taskService = taskService;
             _commentService = commentService;
@@ -27,6 +28,7 @@ namespace InternFlow.MVC.Controllers
             _activityLogService = activityLogService;
             _hubContext = hubContext;
             _userService = userService;
+            _taskAssigneeService = taskAssigneeService;
         }
 
         public IActionResult Index()
@@ -40,6 +42,7 @@ namespace InternFlow.MVC.Controllers
 
             ViewBag.MyTasks = myTasks;
             ViewBag.OtherTasks = otherTasks;
+            ViewBag.TaskAssignees = _taskAssigneeService.GetAll();
 
             return View(allTasks);
         }
@@ -50,7 +53,7 @@ namespace InternFlow.MVC.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(TaskItem task)
+        public IActionResult Create(TaskItem task, List<int>? additionalUserIds)
         {
             try
             {
@@ -65,9 +68,16 @@ namespace InternFlow.MVC.Controllers
                     CreatedAt = DateTime.Now
                 });
 
-                // Kullanıcı projeye üye değilse ekle
+                // İlk kullanıcıyı TaskAssignee'ye ekle
                 if (task.AssignedUserId.HasValue)
                 {
+                    _taskAssigneeService.Add(new TaskAssignee
+                    {
+                        TaskItemId = task.Id,
+                        UserId = task.AssignedUserId.Value
+                    });
+
+                    // ProjectMember kontrolü
                     var isMember = _projectMemberService.GetAll()
                         .Any(pm => pm.ProjectId == task.ProjectId
                                 && pm.UserId == task.AssignedUserId.Value);
@@ -79,6 +89,32 @@ namespace InternFlow.MVC.Controllers
                             ProjectId = task.ProjectId,
                             UserId = task.AssignedUserId.Value
                         });
+                    }
+                }
+
+                // Ek kullanıcıları eklemk icın
+                if (additionalUserIds != null)
+                {
+                    foreach (var userId in additionalUserIds)
+                    {
+                        _taskAssigneeService.Add(new TaskAssignee
+                        {
+                            TaskItemId = task.Id,
+                            UserId = userId
+                        });
+
+                        var isMember = _projectMemberService.GetAll()
+                            .Any(pm => pm.ProjectId == task.ProjectId
+                                    && pm.UserId == userId);
+
+                        if (!isMember)
+                        {
+                            _projectMemberService.Add(new ProjectMember
+                            {
+                                ProjectId = task.ProjectId,
+                                UserId = userId
+                            });
+                        }
                     }
                 }
 

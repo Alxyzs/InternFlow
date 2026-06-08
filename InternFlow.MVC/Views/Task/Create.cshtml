@@ -84,21 +84,36 @@
 
             <!-- User -->
             <div class="mb-3">
-                <label>User</label>
+                <label>Users</label>
 
-                <input type="text"
-                       id="userSearch"
-                       class="form-control mb-1"
-                       placeholder="Search User..." />
+                <div class="d-flex gap-2 mb-2">
+                    <input type="text"
+                           id="userSearch"
+                           class="form-control"
+                           placeholder="Search User..." />
+                    <button type="button"
+                            class="btn btn-outline-primary"
+                            onclick="addUser()">
+                        + Add
+                    </button>
+                </div>
 
-                <select asp-for="AssignedUserId" id="userSelect" class="form-select">
-                    <option value="">-- Select --</option>
-
+                <select id="userSelect" class="form-select mb-2">
+                    <option value="">-- Select User --</option>
                     @foreach (var u in users)
                     {
-                        <option value="@u.Id">@u.FullName</option>
+                        <option value="@u.Id" data-name="@u.FullName">@u.FullName</option>
                     }
                 </select>
+
+                <!-- Seçilen kullanıcılar -->
+                <div id="selectedUsers" class="d-flex flex-wrap gap-2 mt-2"></div>
+
+                <!-- İlk kullanıcı AssignedUserId olarak gidecek -->
+                <input type="hidden" id="firstUserId" name="AssignedUserId" value="" />
+
+                <!-- Ek kullanıcılar additionalUserIds olarak gidecek -->
+                <div id="hiddenUserInputs"></div>
             </div>
 
             <!-- Due Date -->
@@ -143,6 +158,64 @@
 ========================= -->
 
 <script>
+
+    let isFirstUser = true;
+
+    function addUser() {
+    const select = document.getElementById("userSelect");
+    const selectedId = select.value;
+    const selectedName = select.options[select.selectedIndex]?.dataset.name;
+
+    if (!selectedId) return;
+
+    // Aynı kullanıcı iki kez eklenmesin
+    const existing = document.querySelector(`#hiddenUserInputs input[value="${selectedId}"]`);
+    const firstUserId = document.getElementById("firstUserId").value;
+    if (existing || firstUserId === selectedId) {
+    Swal.fire({
+    icon: 'warning',
+    title: 'Already Added',
+    text: `${selectedName} is already in the list.`,
+    confirmButtonColor: '#f59e0b'
+    });
+    return;
+    }
+
+    // Badge olarak göster
+    const badge = document.createElement("span");
+    badge.className = "badge bg-primary d-flex align-items-center gap-1 p-2";
+    badge.innerHTML = `${selectedName} <button type="button" class="btn-close btn-close-white btn-sm" onclick="removeUser(this, '${selectedId}')"></button>`;
+    document.getElementById("selectedUsers").appendChild(badge);
+
+    if (isFirstUser) {
+    // İlk kullanıcı AssignedUserId'ye git
+    document.getElementById("firstUserId").value = selectedId;
+    isFirstUser = false;
+    } else {
+    // Diğerleri additionalUserIds'e git
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "additionalUserIds";
+    input.value = selectedId;
+    input.id = `user_${selectedId}`;
+    document.getElementById("hiddenUserInputs").appendChild(input);
+    }
+
+    select.value = "";
+    }
+
+    function removeUser(btn, userId) {
+    btn.closest("span").remove();
+
+    const firstUserId = document.getElementById("firstUserId").value;
+    if (firstUserId === userId) {
+    document.getElementById("firstUserId").value = "";
+    isFirstUser = true;
+    } else {
+    const input = document.getElementById(`user_${userId}`);
+    if (input) input.remove();
+    }
+    }
 
     function filterSelect(inputId, selectId) {
 

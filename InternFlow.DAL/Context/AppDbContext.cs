@@ -18,6 +18,7 @@ namespace InternFlow.DAL.Context
         public DbSet<TaskItem>? TaskItems { get; set; }
         public DbSet<TaskComment>? TaskComments { get; set; }
         public DbSet<ActivityLog>? ActivityLogs { get; set; }
+        public DbSet<TaskAssignee> TaskAssignees { get; set; }
 
     }
 
