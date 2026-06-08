@@ -1,5 +1,6 @@
 ﻿using InternFlow.BLL.Interfaces;
 using InternFlow.EL.DBContextModels;
+using InternFlow.EL.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace InternFlow.MVC.Controllers
@@ -69,13 +70,19 @@ namespace InternFlow.MVC.Controllers
             TempData["Success"] = "User deleted successfully.";
             return RedirectToAction("Index");
         }
+
         [HttpPost]
         public IActionResult ChangeRole(int id, string role)
         {
+
+            if (!Enum.TryParse<UserRole>(role, out _))
+            {
+                return BadRequest("Geçersiz rol!");
+            }
+
             var user = _userService.GetById(id);
             user.Role = role;
             _userService.Update(user);
-            TempData["Success"] = $"Role changed to {role} successfully.";
             return RedirectToAction("Index");
         }
     }

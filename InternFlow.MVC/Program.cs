@@ -3,10 +3,10 @@ using InternFlow.BLL.Services;
 using InternFlow.DAL.Context;
 using InternFlow.DAL.Interfaces;
 using InternFlow.DAL.Repositories;
-using InternFlow.EL.DBContextModels;
+using InternFlow.EL.Enums;
 using InternFlow.MVC.Hubs;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -124,8 +124,8 @@ using (var scope = app.Services.CreateScope())
             FullName = "Admin",
             Username = "admin",
             Email = "admin@internflow.com",
-            Role = "Admin"
-        }, "1234!");
+            Role = UserRole.Admin.ToString()
+        }, "Admin123!");
     }
     catch { }
 }

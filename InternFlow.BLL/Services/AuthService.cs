@@ -2,6 +2,7 @@
 using InternFlow.DAL.Interfaces;
 using InternFlow.EL.DBContextModels;
 using System.Security.Cryptography;
+using InternFlow.EL.Enums;
 using System.Text;
 
 namespace InternFlow.BLL.Services
@@ -40,9 +41,9 @@ namespace InternFlow.BLL.Services
 
             user.Password = HashPassword(password);
 
-            // Eğer rol belirtilmemişse Stajyer yap
             if (string.IsNullOrEmpty(user.Role))
-                user.Role = "Stajyer";
+                user.Role = UserRole.Stajyer.ToString();
+
 
             _userRepository.Add(user);
         }

@@ -74,15 +74,15 @@
                         <div class="d-flex gap-2 mb-2">
 
                             <a asp-action="Edit"
-                               asp-route-id="@item.Id"
-                               class="btn btn-edit w-50">
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-edit w-50">
                                 Edit
                             </a>
 
                             <a asp-action="Delete"
-                               asp-route-id="@item.Id"
-                               class="btn btn-delete w-50"
-                               onclick="return confirm('Delete user?');">
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-delete w-50"
+                                   onclick="return confirm('Delete user?');">
                                 Delete
                             </a>
 
@@ -93,9 +93,17 @@
                             <input type="hidden" name="id" value="@item.Id" />
 
                             <select name="role" class="form-select form-select-sm">
-                                <option value="Admin" selected="@(item.Role == "Admin")">Admin</option>
-                                <option value="User" selected="@(item.Role == "User")">User</option>
-                                <option value="Stajyer" selected="@(item.Role == "Stajyer")">Stajyer</option>
+                                @foreach (var role in Enum.GetValues<InternFlow.EL.Enums.UserRole>())
+                                {
+                                    if (item.Role == role.ToString())
+                                    {
+                                        <option value="@role" selected>@role</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@role">@role</option>
+                                    }
+                                }
                             </select>
 
                             <button type="submit" class="btn btn-sm btn-primary">
@@ -147,25 +155,25 @@
         let html = `<ul class="pagination justify-content-center">`;
 
         html += `
-            <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-                <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Prev</a>
-            </li>
-        `;
+                <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Prev</a>
+                </li>
+            `;
 
         for (let i = 1; i <= totalPages; i++) {
 
             html += `
-                <li class="page-item ${i === currentPage ? "active" : ""}">
-                    <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
-                </li>
-            `;
+                    <li class="page-item ${i === currentPage ? "active" : ""}">
+                        <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                    </li>
+                `;
         }
 
         html += `
-            <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-                <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>
-            </li>
-        `;
+                <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>
+                </li>
+            `;
 
         html += `</ul>`;
 
@@ -184,7 +192,7 @@
     }
 
     // GLOBAL SEARCH
-    searchInput.addEventListener("input", function () {
+    searchInput.addEventListener("input", function() {
 
         const value = this.value.toLowerCase();
 
@@ -195,8 +203,8 @@
             const role = item.dataset.role.toLowerCase();
 
             return name.includes(value) ||
-                   email.includes(value) ||
-                   role.includes(value);
+                email.includes(value) ||
+                role.includes(value);
         });
 
         currentPage = 1;

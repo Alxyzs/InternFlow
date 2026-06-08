@@ -1,6 +1,7 @@
 ﻿using InternFlow.BLL.Interfaces;
 using InternFlow.BLL.Services;
 using InternFlow.EL.DBContextModels;
+using InternFlow.EL.Enums;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -46,7 +47,7 @@ namespace InternFlow.MVC.Controllers
              {
                  new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                  new Claim(ClaimTypes.Name, user.Username ?? ""),
-                 new Claim(ClaimTypes.Role, user.Role ?? "Stajyer"),
+                 new Claim(ClaimTypes.Role, user.Role ?? UserRole.Stajyer.ToString()),
                  new Claim(ClaimTypes.Email, user.Email ?? "")
              };
 
