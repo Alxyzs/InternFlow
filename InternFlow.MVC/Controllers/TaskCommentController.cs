@@ -19,18 +19,26 @@ namespace InternFlow.MVC.Controllers
             try
             {
                 _commentService.Add(comment);
-                return RedirectToAction("Detail", "Task", new { id = comment.TaskItemId });
+                TempData["Success"] = "Comment added successfully.";
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
-                return RedirectToAction("Detail", "Task", new { id = comment.TaskItemId });
+                TempData["Error"] = ex.Message;
             }
+            return RedirectToAction("Detail", "Task", new { id = comment.TaskItemId });
         }
 
         public IActionResult Delete(int id, int taskItemId)
         {
-            _commentService.Delete(id);
+            try
+            {
+                _commentService.Delete(id);
+                TempData["Success"] = "Comment deleted successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
             return RedirectToAction("Detail", "Task", new { id = taskItemId });
         }
     }

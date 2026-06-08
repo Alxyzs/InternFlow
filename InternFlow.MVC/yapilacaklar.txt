@@ -25,5 +25,5 @@
   - Toaster Eklenecek POPUP mesajları için Değiştirildi , silindi şeyleri için .
 
   YENİ EKLENECEK OLAN ; 
-
-  - eğer mailde @gmail fln yoksa geçerli bir gmail adresi giriniz uyarısı verilecek .
+  -------------------
+    - eğer mailde @gmail fln yoksa geçerli bir gmail adresi giriniz uyarısı verilecek . - ✔

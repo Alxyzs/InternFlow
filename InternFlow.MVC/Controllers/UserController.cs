@@ -64,6 +64,7 @@ namespace InternFlow.MVC.Controllers
                 return View(user);
             }
         }
+            
         public IActionResult Delete(int id)
         {
             _userService.Delete(id);
@@ -74,15 +75,16 @@ namespace InternFlow.MVC.Controllers
         [HttpPost]
         public IActionResult ChangeRole(int id, string role)
         {
-
             if (!Enum.TryParse<UserRole>(role, out _))
             {
-                return BadRequest("Geçersiz rol!");
+                TempData["Error"] = "Invalid role!";
+                return RedirectToAction("Index");
             }
 
             var user = _userService.GetById(id);
             user.Role = role;
             _userService.Update(user);
+            TempData["Success"] = $"{user.FullName}'s role changed to {role}!";
             return RedirectToAction("Index");
         }
     }

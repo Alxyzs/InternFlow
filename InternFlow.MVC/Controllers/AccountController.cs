@@ -69,12 +69,19 @@ namespace InternFlow.MVC.Controllers
         {
             try
             {
+                if (!string.IsNullOrEmpty(user.Email) && !user.Email.Contains("@"))
+                {
+                    TempData["Error"] = "Please enter a valid email address!";
+                    return View(user);
+                }
+
                 _authService.Register(user, password);
+                TempData["Success"] = "Registration successful! Please login.";
                 return RedirectToAction("Login");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                TempData["Error"] = ex.Message;
                 return View(user);
             }
         }

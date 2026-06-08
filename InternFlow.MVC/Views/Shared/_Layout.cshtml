@@ -22,7 +22,6 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 
-                    <!-- Sol menü -->
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">🏠 Home</a>
@@ -33,15 +32,11 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Task" asp-action="Index">📌 Tasks</a>
                         </li>
-
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Task" asp-action="Kanban">📋 Kanban</a>
                             </li>
-                        }
-                        @if (User.IsInRole("Admin"))
-                        {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="User" asp-action="Index">👥 Users</a>
                             </li>
@@ -49,10 +44,8 @@
                                 <a class="nav-link text-dark" asp-controller="ActivityLog" asp-action="Index">📜 Activity Logs</a>
                             </li>
                         }
-
                     </ul>
 
-                    <!-- Sağ menü - kullanıcı bilgisi -->
                     <ul class="navbar-nav">
                         @if (User.Identity.IsAuthenticated)
                         {
@@ -94,84 +87,63 @@
             &copy; 2026 - InternFlow.MVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-    <script>
-        toastr.options = {
-            closeButton: true,
-            progressBar: true,
-            newestOnTop: true,
-            preventDuplicates: true,
-            positionClass: "toast-top-right",
-            timeOut: "3000"
-        };
-    </script>
-
-    <!-- TempData Toasts -->
-    <script>
-        @if (TempData["Success"] != null)
-        {
-                <text>toastr.success("@TempData["Success"]");</text>
-        }
-        @if (TempData["Error"] != null)
-        {
-                <text>toastr.error("@TempData["Error"]");</text>
-        }
-        @if (TempData["Warning"] != null)
-        {
-                <text>toastr.warning("@TempData["Warning"]");</text>
-        }
-        @if (TempData["Info"] != null)
-        {
-                <text>toastr.info("@TempData["Info"]");</text>
-        }
-    </script>
-    <!-- TempData Toasts -->
-    <!-- SignalR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
 
     <script>
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/notificationHub")
-            .build();
+        toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        newestOnTop: true,
+        preventDuplicates: true,
+        positionClass: "toast-top-right",
+        timeOut: "3000",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+        };
 
-        connection.on("ReceiveStatusUpdate", function (taskId, newStatus, taskTitle)
+        @if (TempData["Success"] != null)
         {
-
-            toastr.info(
-                `"${taskTitle}" status changed to ${newStatus}`,
-                "Task Update"
-            );
-
-        });
-
-        connection.on("ReceiveComment", function (taskId, comment)
+            <text>toastr.success("@TempData["Success"]", "Success"); </text>
+        }
+        @if (TempData["Error"] != null)
         {
-
-            toastr.success(
-                comment,
-                "New Comment"
-            );
-
-        });
-
-        connection.on("ReceiveProjectNotification", function (projectName)
+            <text>toastr.error("@TempData["Error"]", "Error"); </text>
+        }
+        @if (TempData["Warning"] != null)
         {
-
-            toastr.info(
-                `"${projectName}" created`,
-                "Project Notification"
-            );
-
-        });
-
-        connection.start()
-            .catch(err => console.error(err));
+            <text>toastr.warning("@TempData["Warning"]", "Warning"); </text>
+        }
+        @if (TempData["Info"] != null)
+        {
+            <text>toastr.info("@TempData["Info"]", "Info"); </text>
+        }
     </script>
-    <!-- SignalR -->
+
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/notificationHub")
+        .build();
+
+        connection.on("ReceiveStatusUpdate", function(taskId, newStatus, taskTitle) {
+        toastr.info(`"${taskTitle}" status changed to ${newStatus}`, "Task Update");
+        });
+
+        connection.on("ReceiveComment", function(taskId, comment) {
+        toastr.success(comment, "New Comment");
+        });
+
+        connection.on("ReceiveProjectNotification", function(projectName) {
+        toastr.info(`"${projectName}" created`, "Project Notification");
+        });
+
+        connection.start().catch(err => console.error(err));
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

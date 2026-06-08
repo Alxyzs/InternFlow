@@ -92,35 +92,40 @@ namespace InternFlow.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(TaskItem task)
         {
-            var existing = _taskService.GetById(task.Id);
+            try
+            {
+                var existing = _taskService.GetById(task.Id);
+                existing.Title = task.Title;
+                existing.Description = task.Description;
+                existing.Status = task.Status;
+                existing.Priority = task.Priority;
+                existing.DueDate = task.DueDate;
+                existing.AssignedUserId = task.AssignedUserId;
+                existing.ProjectId = task.ProjectId;
+                _taskService.Update(existing);
 
-            existing.Title = task.Title;
-            existing.Description = task.Description;
-            existing.Status = task.Status;
-            existing.Priority = task.Priority;
-            existing.DueDate = task.DueDate;
-            existing.AssignedUserId = task.AssignedUserId;
-            existing.ProjectId = task.ProjectId;
+                await _hubContext.Clients.All.SendAsync("ReceiveStatusUpdate", task.Id, task.Status, task.Title);
 
-            _taskService.Update(existing);
-
-            await _hubContext.Clients.All.SendAsync(
-                "ReceiveStatusUpdate",
-                task.Id,
-                task.Status,
-                task.Title);
-
-            TempData["Success"] = "Task updated successfully.";
-
+                TempData["Success"] = "Task updated successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
             return RedirectToAction("Index");
         }
 
         public IActionResult Delete(int id)
         {
-            _taskService.Delete(id);
-
-            TempData["Success"] = "Task deleted successfully.";
-
+            try
+            {
+                _taskService.Delete(id);
+                TempData["Success"] = "Task deleted successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
             return RedirectToAction("Index");
         }
 
