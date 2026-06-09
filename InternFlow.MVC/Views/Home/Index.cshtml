@@ -6,19 +6,19 @@
 <style>
 
     body {
-        background-color: #f4f7fa;
+    background-color: #f4f7fa;
     }
 
     .dashboard-card {
-        transition: all 0.3s ease;
+    transition: all 0.3s ease;
     }
 
-        .dashboard-card:hover {
-            transform: translateY(-8px);
-        }
+    .dashboard-card:hover {
+    transform: translateY(-8px);
+    }
 
     .dashboard-icon {
-        font-size: 45px;
+    font-size: 45px;
     }
 
 </style>
@@ -209,11 +209,11 @@
 
 <script>
     function showUnauthorizedAlert() {
-        Swal.fire({
-            title: 'Erişim Reddedildi!',
-            text: 'Bu panele erişim yetkiniz bulunmamaktadır.',
-            icon: 'error',
-            confirmButtonText: 'Tamam'
-        });
+    Swal.fire({
+    title: 'Access Denied!!',
+    text: 'You do not have permission to access this panel.',
+    icon: 'error',
+    confirmButtonText: 'Tamam'
+    });
     }
 </script>

@@ -115,7 +115,7 @@
 
                     <div class="mt-3 d-flex gap-2">
 
-                        @if (User.IsInRole("Admin") || item.AssignedUserId == currentUserId)
+                        @if (User.IsInRole("Admin") )
                         {
                             <a asp-action="Edit"
                                    asp-route-id="@item.Id"
@@ -140,7 +140,7 @@
                             </a>
                         }
 
-                        @if (User.IsInRole("Admin") || item.AssignedUserId == currentUserId)
+                        @if (User.IsInRole("Admin") )
                         {
                             <div class="complete-btn-area w-100">
                                 @if (item.Status != "Completed")
