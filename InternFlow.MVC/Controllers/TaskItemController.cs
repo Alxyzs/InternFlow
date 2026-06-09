@@ -19,8 +19,9 @@ namespace InternFlow.MVC.Controllers
         private readonly IHubContext<NotificationHub> _hubContext;
         private readonly IUserService _userService;
         private readonly ITaskAssigneeService _taskAssigneeService;
+        private readonly IProjectService _projectService;
 
-        public TaskController(ITaskService taskService, ICommentService commentService, IProjectMemberService projectMemberService, IActivityLogService activityLogService, IHubContext<NotificationHub> hubContext, IUserService userService, ITaskAssigneeService taskAssigneeService)
+        public TaskController(ITaskService taskService, ICommentService commentService, IProjectMemberService projectMemberService, IActivityLogService activityLogService, IHubContext<NotificationHub> hubContext, IUserService userService, ITaskAssigneeService taskAssigneeService, IProjectService projectservice)
         {
             _taskService = taskService;
             _commentService = commentService;
@@ -29,6 +30,7 @@ namespace InternFlow.MVC.Controllers
             _hubContext = hubContext;
             _userService = userService;
             _taskAssigneeService = taskAssigneeService;
+            _projectService = projectservice;
         }
 
         public IActionResult Index()
@@ -203,13 +205,17 @@ namespace InternFlow.MVC.Controllers
                 .Where(pm => pm.ProjectId == task.ProjectId)
                 .ToList();
 
+
+            var allProjects = _projectService.GetAll();
+            task.Project = allProjects.FirstOrDefault(p => p.Id == task.ProjectId);
+            task.AssignedUser = users.FirstOrDefault(u => u.Id == task.AssignedUserId);
+
             ViewBag.Comments = comments;
             ViewBag.Users = users;
             ViewBag.ProjectMembers = projectMembers;
 
             return View(task);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> UpdateStatus(int id, string status)
