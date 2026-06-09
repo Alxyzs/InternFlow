@@ -99,3 +99,45 @@ This structure ensures separation of concerns, scalability, and maintainability.
 | ActivityLog | Audit trail for all changes |
 
 ### Relationships
+User     → TaskItem      (1-N)
+Project  → TaskItem      (1-N)
+Project  ↔ User          (N-N via ProjectMember)
+TaskItem ↔ User          (N-N via TaskAssignee)
+TaskItem → TaskComment   (1-N)
+TaskItem → ActivityLog   (1-N)
+
+---
+
+## 👨‍💻 My Role (Ali - Backend)
+- Designed and implemented layered architecture (EL/DAL/BLL/MVC)
+- Built EF Core models, DbContext, and migrations
+- Implemented Generic Repository Pattern
+- Developed all BLL services with business rules
+- Built JWT + Cookie authentication system
+- Implemented SignalR Hub for real-time features
+- Created role-based authorization
+- Managed all database migrations
+
+---
+
+## 📂 Project Structure
+InternFlow/
+├── InternFlow.EL   → Entity models
+├── InternFlow.DAL  → DbContext, Repository
+├── InternFlow.BLL  → Services, Interfaces
+└── InternFlow.MVC  → Controllers, Views
+
+---
+
+## 💡 Key Learnings
+- ASP.NET Core MVC layered architecture
+- Entity Framework Core (Code First)
+- Generic Repository Pattern
+- JWT Authentication & Role-based Authorization
+- SignalR real-time communication
+- Git branching & team collaboration
+- Clean code principles
+
+---
+
+> 📌 *Developed for educational and internship purposes.*
