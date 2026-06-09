@@ -14,8 +14,13 @@
 <div class="container mt-5">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>📌 Tasks</h2>
-        <a asp-action="Create" class="btn btn-success">+ New Task</a>
+        <h2> Tasks</h2>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#otherTasksModal">
+                Other Tasks
+            </button>
+            <a asp-action="Create" class="btn btn-success">+ New Task</a>
+        </div>
     </div>
 
     <div class="mb-4">
@@ -29,17 +34,31 @@
         <div id="noMyTasks" class="alert alert-info text-center mb-4" style="display:none;">
             You have no tasks assigned to you.
         </div>
+        <div id="pagination" class="mt-4"></div>
     </div>
 
-    <!-- OTHER TASKS -->
-    <div id="otherTasksSection" class="mt-4">
-        <h4 class="mb-3"> Other Tasks</h4>
-        <div class="row g-4" id="otherTaskContainer"></div>
-        <div id="noOtherTasks" class="alert alert-secondary text-center mb-4" style="display:none;">
-            No other tasks found.
+    <!-- OTHER TASKS MODAL -->
+    <div class="modal fade" id="otherTasksModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"> Other Tasks</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4" id="otherTaskContainer"></div>
+                    <div id="noOtherTasks" class="alert alert-secondary text-center" style="display:none;">
+                        No other tasks found.
+                    </div>
+                    <div class="text-center mt-3" id="loadMoreContainer" style="display:none;">
+                        <button class="btn btn-outline-primary" onclick="loadMore()">Load More</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- Kartlar burada render edilir, JS ile taşınır -->
     <div style="display:none" id="taskContainer">
         @foreach (var item in Model)
         {
@@ -70,9 +89,12 @@
                     <hr />
 
                     <div>📁 <b>Project:</b> @(project?.Name ?? "Not Assigned")</div>
+
                     @{
                         var taskAssignees = ViewBag.TaskAssignees as List<InternFlow.EL.DBContextModels.TaskAssignee>;
-                        var assigneeNames = taskAssignees?.Where(ta => ta.TaskItemId == item.Id).Select(ta => users.FirstOrDefault(u => u.Id == ta.UserId)?.FullName ?? "").Where(n => !string.IsNullOrEmpty(n)).ToList();
+                        var assigneeNames = taskAssignees?.Where(ta => ta.TaskItemId == item.Id)
+                            .Select(ta => users.FirstOrDefault(u => u.Id == ta.UserId)?.FullName ?? "")
+                            .Where(n => !string.IsNullOrEmpty(n)).ToList();
                     }
                     <div>
                         👤 <b>Users:</b>
@@ -82,7 +104,7 @@
                         }
                         else
                         {
-                            <span> @(user?.FullName ?? "Not Assigned") </span>
+                            <span>@(user?.FullName ?? "Not Assigned")</span>
                         }
                     </div>
 
@@ -162,8 +184,6 @@
         }
     </div>
 
-    <div id="pagination" class="mt-4"></div>
-
 </div>
 
 <script>
@@ -177,68 +197,80 @@
     const myCards = allCards.filter(c => c.dataset.mine === "true");
     const otherCards = allCards.filter(c => c.dataset.mine === "false");
 
-    // Kartları doğru containerlara taşı
-    myCards.forEach(c => {
-        c.style.display = "";
-        myContainer.appendChild(c);
-    });
-    otherCards.forEach(c => {
-        c.style.display = "";
-        otherContainer.appendChild(c);
-    });
+    // My Tasks kartlarını taşı
+    myCards.forEach(c => {c.style.display = "none";myContainer.appendChild(c);});
+
+    // Other Tasks kartlarını taşı ama gizle
+    otherCards.forEach(c => {c.style.display = "none";otherContainer.appendChild(c);});
 
     if (myCards.length === 0) noMyTasks.style.display = "";
     if (otherCards.length === 0) noOtherTasks.style.display = "";
 
-    // Pagination sadece Other Tasks için
-    let currentPage = 1;
-    const itemsPerPage = 6;
-    let filteredCards = [...otherCards];
+    // My Tasks pagination
+    const myItemsPerPage = 10;
+    let myCurrentPage = 1;
 
-    function render() {
-        const start = (currentPage - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-        otherCards.forEach(c => c.style.display = "none");
-        filteredCards.slice(start, end).forEach(c => c.style.display = "");
-        renderPagination();
+    function renderMyTasks() {
+        const start = (myCurrentPage - 1) * myItemsPerPage;
+        const end = start + myItemsPerPage;
+        myCards.forEach(c => c.style.display = "none");
+        myCards.slice(start, end).forEach(c => c.style.display = "");
+        renderMyPagination();
     }
 
-    function renderPagination() {
-        const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
+    function renderMyPagination() {
+        const totalPages = Math.ceil(myCards.length / myItemsPerPage);
         if (totalPages <= 1) {
             document.getElementById("pagination").innerHTML = "";
             return;
         }
         let html = `<ul class="pagination justify-content-center">`;
-        html += `<li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-                <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Prev</a></li>`;
+        html += `<li class="page-item ${myCurrentPage === 1 ? "disabled" : ""}">
+            <a class="page-link" href="#" onclick="changeMyPage(${myCurrentPage - 1})">Prev</a></li>`;
         for (let i = 1; i <= totalPages; i++) {
-            html += `<li class="page-item ${i === currentPage ? "active" : ""}">
-                    <a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`;
+            html += `<li class="page-item ${i === myCurrentPage ? "active" : ""}">
+                <a class="page-link" href="#" onclick="changeMyPage(${i})">${i}</a></li>`;
         }
-        html += `<li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-                <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a></li>`;
+        html += `<li class="page-item ${myCurrentPage === totalPages ? "disabled" : ""}">
+            <a class="page-link" href="#" onclick="changeMyPage(${myCurrentPage + 1})">Next</a></li>`;
         html += `</ul>`;
         document.getElementById("pagination").innerHTML = html;
     }
 
-    function changePage(page) {
-        const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
+    function changeMyPage(page) {
+        const totalPages = Math.ceil(myCards.length / myItemsPerPage);
         if (page < 1 || page > totalPages) return;
-        currentPage = page;
-        render();
+        myCurrentPage = page;
+        renderMyTasks();
     }
 
-    searchInput.addEventListener("input", function() {
-        const value = this.value.toLowerCase();
-        filteredCards = otherCards.filter(card => {
-            const title = card.dataset.title.toLowerCase();
-            const desc = card.dataset.description.toLowerCase();
-            return title.includes(value) || desc.includes(value);
-        });
-        currentPage = 1;
-        render();
+    renderMyTasks();
+
+    // Other Tasks Load More
+    const otherItemsPerPage = 10;
+    let currentCount = 0;
+
+    function loadMore() {
+        const end = currentCount + otherItemsPerPage;
+        otherCards.slice(currentCount, end).forEach(c => c.style.display = "");
+        currentCount = end;
+        document.getElementById("loadMoreContainer").style.display = currentCount < otherCards.length ? "" : "none";
+    }
+
+    // Modal açılınca ilk 10u göstermesi icin
+    document.getElementById("otherTasksModal").addEventListener("show.bs.modal", function () {
+        currentCount = 0;
+        otherCards.forEach(c => c.style.display = "none");
+        loadMore();
     });
 
-    render();
+    // Search sadece My Tasksta ara
+    searchInput.addEventListener("input", function () {
+        const value = this.value.toLowerCase();
+        myCards.forEach(card => {
+            const title = card.dataset.title.toLowerCase();
+            const desc = card.dataset.description.toLowerCase();
+            card.style.display = (title.includes(value) || desc.includes(value)) ? "" : "none";
+        });
+    });
 </script>
