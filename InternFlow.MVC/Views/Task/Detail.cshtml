@@ -45,7 +45,7 @@
 
         <h5>💬 Comments</h5>
 
-        <div id="commentsList">
+        <div id="commentsList" style="max-height: 400px; overflow-y: auto;">
             @if (ViewBag.Comments != null && ViewBag.Comments.Count > 0)
             {
                 @foreach (var comment in ViewBag.Comments)

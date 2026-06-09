@@ -133,7 +133,7 @@
         connection.on("ReceiveStatusUpdate", function(taskId, newStatus, taskTitle) {
         toastr.info(`"${taskTitle}" status changed to ${newStatus}`, "Task Update");
 
-        // O task kartını bul ve badge'i güncelle
+        // O task kartını bulup completed ile güncelle
         const card = document.querySelector(`.task-card[data-id="${taskId}"]`);
         if (card) {
         card.dataset.status = newStatus;
