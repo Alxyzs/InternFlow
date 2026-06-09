@@ -18,8 +18,7 @@
     var expiredTasks =
         tasks.Count(x =>
             x.DueDate.HasValue &&
-            x.DueDate.Value.Date < DateTime.Now.Date &&
-            x.Status != "Done");
+            x.DueDate.Value.Date < DateTime.Now.Date);
 
     var highPriorityTasks =
         tasks.Where(x => x.Priority == "High")
