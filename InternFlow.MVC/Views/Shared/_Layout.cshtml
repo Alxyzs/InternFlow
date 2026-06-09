@@ -30,6 +30,7 @@
                             <a class="nav-link text-dark" asp-controller="Project" asp-action="Index">📁 Projects</a>
                         </li>
                         <li class="nav-item">
+
                             <a class="nav-link text-dark" asp-controller="Task" asp-action="Index">📌 Tasks</a>
                         </li>
                         @if (User.IsInRole("Admin"))
@@ -155,7 +156,10 @@
         });
 
         connection.on("ReceiveComment", function(taskId, comment) {
+        // Detail sayfasındaysa toastr gösterme canlı chat halleder geldiartık
+        if (!window.location.pathname.includes("/Task/Detail")) {
         toastr.success(comment, "New Comment");
+        }
         });
 
         connection.on("ReceiveProjectNotification", function(projectName) {

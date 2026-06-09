@@ -11,9 +11,9 @@ namespace InternFlow.MVC.Hubs
         }
 
         // Yorum eklenince bildirir
-        public async Task CommentAdded(int taskId, string comment)
+        public async Task CommentAdded(int taskId, string content, string userName, int commentId, int userId, string createdAt)
         {
-            await Clients.All.SendAsync("ReceiveComment", taskId, comment);
+            await Clients.All.SendAsync("ReceiveComment", taskId, content, userName, commentId, userId, createdAt);
         }
 
         // Proje eklenince bildirir

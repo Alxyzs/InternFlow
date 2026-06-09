@@ -8,32 +8,19 @@
 
     <div class="card p-4">
 
-        <!-- Başlık -->
         <h3>@Model.Title</h3>
 
-        <!-- Açıklama -->
         <p class="text-muted">
-            @(string.IsNullOrEmpty(Model.Description)
-                        ? "Not Appointed"
-                        : Model.Description)
+            @(string.IsNullOrEmpty(Model.Description) ? "Not Appointed" : Model.Description)
         </p>
 
-        <!-- Rozetler -->
         <div class="mb-3">
-
-            <span class="badge bg-secondary">
-                @Model.Status
-            </span>
-
-            <span class="badge bg-info">
-                @Model.Priority
-            </span>
-
+            <span class="badge bg-secondary">@Model.Status</span>
+            <span class="badge bg-info">@Model.Priority</span>
         </div>
 
         <hr />
 
-        <!-- Iliskiler -->
         <div class="mb-2">
             📁 <b>Project:</b> @(Model.Project?.Name ?? "Not Appointed")
         </div>
@@ -42,75 +29,129 @@
             👤 <b>User:</b> @(Model.AssignedUser?.FullName ?? "Not Appointed")
         </div>
 
-        <!-- Bitiş Tarihi -->
         <div class="mb-2">
             📅 <b>Due Date:</b>
-            @(Model.DueDate.HasValue
-                        ? Model.DueDate.Value.ToString("dd.MM.yyyy")
-                        : "Uncertain")
+            @(Model.DueDate.HasValue ? Model.DueDate.Value.ToString("dd.MM.yyyy") : "Uncertain")
         </div>
 
-        <!-- Oluşturulma Tarihi -->
         <div class="mb-2 text-muted">
             🕒 Creation Date: @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")
         </div>
 
     </div>
 
-    <!-- Yorum -->
+    <!-- Yorumlar -->
     <div class="card p-4 mt-3">
 
         <h5>💬 Comments</h5>
 
-        @if (ViewBag.Comments != null && ViewBag.Comments.Count > 0)
-        {
-            @foreach (var comment in ViewBag.Comments)
+        <div id="commentsList">
+            @if (ViewBag.Comments != null && ViewBag.Comments.Count > 0)
             {
-                var commentUser = ((List<InternFlow.EL.DBContextModels.User>)ViewBag.Users).FirstOrDefault(u => u.Id == comment.UserId);
+                @foreach (var comment in ViewBag.Comments)
+                {
+                    var commentUser = ((List<InternFlow.EL.DBContextModels.User>)ViewBag.Users)
+                        .FirstOrDefault(u => u.Id == comment.UserId);
+                    var projectMembers2 = ViewBag.ProjectMembers as List<InternFlow.EL.DBContextModels.ProjectMember>;
+                    var isMember = projectMembers2?.Any(pm => pm.UserId == comment.UserId) ?? false;
 
-                <div class="border-bottom py-2 d-flex justify-content-between align-items-center">
-                    <div>
-                        @{
-                            var projectMembers = ViewBag.ProjectMembers as List<InternFlow.EL.DBContextModels.ProjectMember>;
-                            var isMember = projectMembers?.Any(pm => pm.UserId == comment.UserId) ?? false;
+                    <div class="border-bottom py-2 d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="fw-bold text-primary">👤 @(commentUser?.FullName ?? "Unknown")</span>
+                            <span class="badge @(isMember ? "bg-danger" : "bg-secondary") ms-1">
+                                @(isMember ? "ProjectMember" : "Misafir")
+                            </span>
+                            <span class="text-muted ms-2" style="font-size:12px;">
+                                @comment.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                            </span>
+                            <p class="mb-0 mt-1">@comment.Content</p>
+                        </div>
+                        @if (User.IsInRole("Admin") || comment.UserId == currentUserId)
+                        {
+                            <a asp-controller="TaskComment"
+                                   asp-action="Delete"
+                                   asp-route-id="@comment.Id"
+                                   asp-route-taskItemId="@Model.Id"
+                                   class="btn btn-sm btn-danger">
+                                Delete
+                            </a>
                         }
-
-                        <span class="fw-bold text-primary">👤 @(commentUser?.FullName ?? "Unknown")</span>
-                        <span class="badge @(isMember ? "bg-danger" : "bg-secondary") ms-1">
-                            @(isMember ? "ProjectMember" : "Misafir")
-                        </span>
-
-                        <span class="text-muted ms-2" style="font-size:12px;">@comment.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
-                        <p class="mb-0 mt-1">@comment.Content</p>
                     </div>
-                     @if (User.IsInRole("Admin") || comment.UserId == currentUserId)
-                     {
-                         <a asp-controller="TaskComment"
-                            asp-action="Delete"
-                            asp-route-id="@comment.Id"
-                            asp-route-taskItemId="@Model.Id"
-                            class="btn btn-sm btn-danger">
-                             Delete
-                         </a>
-                     }
-                </div>
+                }
             }
-        }
-        else
-        {
-            <p class="text-muted">No comments yet.</p>
-        }
+            else
+            {
+                <p class="text-muted" id="noComments">No comments yet.</p>
+            }
+        </div>
 
-        <form asp-controller="TaskComment" asp-action="Add" method="post" class="mt-3">
-            <input type="hidden" name="TaskItemId" value="@Model.Id" />
-            <input type="hidden" name="UserId" value="@currentUserId" />
-            <textarea name="Content"
+        <!-- Yorum Formu -->
+        <form id="commentForm" class="mt-3">
+            <input type="hidden" id="taskItemId" value="@Model.Id" />
+            <input type="hidden" id="userId" value="@currentUserId" />
+            <textarea id="commentContent"
                       class="form-control"
                       placeholder="Add a comment..."
                       required></textarea>
-            <button class="btn btn-primary mt-2">Send</button>
+            <button type="submit" class="btn btn-primary mt-2">Send</button>
         </form>
 
     </div>
 
 </div>
+
+@section Scripts {
+    <script>
+        const taskId = @Model.Id;
+        const currentUserId = @currentUserId;
+
+        document.getElementById("commentForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const content = document.getElementById("commentContent").value.trim();
+            if (!content) return;
+
+            const formData = new FormData();
+            formData.append("TaskItemId", document.getElementById("taskItemId").value);
+            formData.append("UserId", document.getElementById("userId").value);
+            formData.append("Content", content);
+
+            fetch("/TaskComment/Add", {
+                method: "POST",
+                body: formData
+            }).then(() => {
+                document.getElementById("commentContent").value = "";
+            });
+        });
+
+        const detailConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub")
+            .build();
+
+        detailConnection.on("ReceiveComment", function (receivedTaskId, content, userName, commentId, userId, createdAt) {
+            if (receivedTaskId != taskId) return;
+
+            const noComments = document.getElementById("noComments");
+            if (noComments) noComments.remove();
+
+            const commentsList = document.getElementById("commentsList");
+            const div = document.createElement("div");
+            div.className = "border-bottom py-2 d-flex justify-content-between align-items-center";
+            div.innerHTML = `
+                <div>
+                    <span class="fw-bold text-primary">👤 ${userName}</span>
+                    <span class="text-muted ms-2" style="font-size:12px;">${createdAt}</span>
+                    <p class="mb-0 mt-1">${content}</p>
+                </div>
+                ${userId == currentUserId ? `
+                    <a href="/TaskComment/Delete/${commentId}?taskItemId=${taskId}"
+                       class="btn btn-sm btn-danger">
+                        Delete
+                    </a>` : ""}
+            `;
+            commentsList.appendChild(div);
+        });
+
+        detailConnection.start().catch(err => console.error(err));
+    </script>
+}
