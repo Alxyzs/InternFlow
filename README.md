@@ -108,18 +108,6 @@ TaskItem → ActivityLog   (1-N)
 
 ---
 
-## 👨‍💻 My Role (Ali - Backend)
-- Designed and implemented layered architecture (EL/DAL/BLL/MVC)
-- Built EF Core models, DbContext, and migrations
-- Implemented Generic Repository Pattern
-- Developed all BLL services with business rules
-- Built JWT + Cookie authentication system
-- Implemented SignalR Hub for real-time features
-- Created role-based authorization
-- Managed all database migrations
-
----
-
 ## 📂 Project Structure
 InternFlow/
 ├── InternFlow.EL   → Entity models
